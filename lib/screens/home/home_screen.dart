@@ -23,7 +23,18 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     // Initialize stream only once with a limit for better performance
-    _coursesStream = DatabaseService().getCourses('All', limit: 5);
+    _refreshCourses();
+  }
+
+  void _refreshCourses() {
+    setState(() {
+      _coursesStream = DatabaseService().getCourses('All', limit: 5).timeout(
+        const Duration(seconds: 10),
+        onTimeout: (sink) {
+          sink.addError('Connection timed out. Please check your internet.');
+        },
+      );
+    });
   }
 
   @override
@@ -215,6 +226,25 @@ class _HomeScreenState extends State<HomeScreen> {
               child: StreamBuilder<List<CourseModel>>(
                 stream: _coursesStream, // Use initialized stream
                 builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.error_outline, color: Colors.red, size: 32),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Connection Error',
+                            style: TextStyle(color: Colors.red[300]),
+                          ),
+                          TextButton(
+                            onPressed: _refreshCourses,
+                            child: const Text('Retry'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }

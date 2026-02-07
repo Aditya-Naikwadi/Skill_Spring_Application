@@ -38,10 +38,27 @@ class AuthService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final String uid = data['localId'];
+        final String? displayName = data['displayName'];
         
         // Fetch user data from Firestore
         // Note: Firestore rules might need to allow access if auth.uid is not present on request
-        return await getUserData(uid);
+        final userParams = await getUserData(uid);
+        
+        if (userParams != null) {
+          return userParams;
+        }
+
+        // Fallback if Firestore fetch failed -> Return basic model to allow login
+        return UserModel(
+          uid: uid,
+          email: email,
+          displayName: displayName ?? 'Student', // Use auth name or better default
+          institution: 'Skill Spring University', // Better default
+          role: UserRole.student,
+          createdAt: DateTime.now(),
+          lastLoginAt: DateTime.now(),
+        );
+
       } else {
         final errorData = jsonDecode(response.body);
         throw errorData['error']['message'] ?? 'Login failed';
@@ -94,8 +111,12 @@ class AuthService {
         );
 
         // Attempting to write to Firestore
-        // Warning: This may fail if rules require auth != null
-        await _firestore.collection('users').doc(uid).set(newUser.toMap());
+        try {
+          await _firestore.collection('users').doc(uid).set(newUser.toMap());
+        } catch (e) {
+          debugPrint('Firestore write failed (offline?): $e');
+          // Start a background retry or just rely on local model for now
+        }
 
         return newUser;
       } else {
@@ -161,8 +182,11 @@ class AuthService {
   // Get user data from Firestore
   Future<UserModel?> getUserData(String uid) async {
     try {
-      final DocumentSnapshot doc =
-          await _firestore.collection('users').doc(uid).get();
+      final DocumentSnapshot doc = await _firestore
+          .collection('users')
+          .doc(uid)
+          .get()
+          .timeout(const Duration(seconds: 5));
 
       if (doc.exists) {
         return UserModel.fromMap(doc.data() as Map<String, dynamic>);
@@ -170,7 +194,7 @@ class AuthService {
       return null;
     } catch (e) {
       // Fallback for demo/testing if firestore fails
-      debugPrint('Firestore Error: $e'); 
+      debugPrint('Firestore Error or Timeout: $e'); 
       return null;
     }
   }

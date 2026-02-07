@@ -23,13 +23,36 @@ class AuthProvider with ChangeNotifier {
 
   // Initialize auth state listener
   void _initAuth() {
+    bool initialCheckCompleted = false;
+
+    // Safety timeout: if Firebase doesn't respond in 5 seconds, assume offline/logged out
+    Future.delayed(const Duration(seconds: 5), () {
+      if (!initialCheckCompleted) {
+        _isAuthCheckComplete = true;
+        initialCheckCompleted = true;
+        notifyListeners();
+      }
+    });
+
     _authService.authStateChanges.listen((User? user) async {
+      if (initialCheckCompleted) {
+        // Just update user if check already completed via timeout or previous event
+        if (user != null) {
+          await _loadUserData(user.uid);
+        } else {
+          _currentUser = null;
+        }
+        notifyListeners();
+        return;
+      }
+
       if (user != null) {
         await _loadUserData(user.uid);
       } else {
         _currentUser = null;
       }
-      _isAuthCheckComplete = true; // Mark check as complete
+      _isAuthCheckComplete = true;
+      initialCheckCompleted = true;
       notifyListeners();
     });
   }

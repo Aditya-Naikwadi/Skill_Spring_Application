@@ -73,13 +73,17 @@ class Helpers {
 
   // Get initials from name
   static String getInitials(String name) {
-    final parts = name.trim().split(' ');
-    if (parts.length >= 2) {
+    if (name.isEmpty) return '';
+    
+    final parts = name.trim().split(RegExp(r'\s+')); // Split by one or more spaces
+    
+    if (parts.isEmpty || parts[0].isEmpty) return '';
+
+    if (parts.length >= 2 && parts[1].isNotEmpty) {
       return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
-    } else if (parts.isNotEmpty) {
+    } else {
       return parts[0][0].toUpperCase();
     }
-    return '';
   }
 
   // Calculate completion percentage

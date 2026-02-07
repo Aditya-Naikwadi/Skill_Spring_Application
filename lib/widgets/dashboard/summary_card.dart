@@ -24,50 +24,51 @@ class SummaryCard extends StatelessWidget {
     return HoverScaleButton(
       onPressed: onTap,
       isOutlined: false,
-      color: const Color(0xFF161B22), // Base color, HoverScaleButton handles hover color/elevation
-      height: double.infinity, // Fill parent
+      color: const Color(0xFF161B22),
+      width: double.infinity,
+      height: double.infinity,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12), // Reduced padding
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(8), // Reduced padding
               decoration: BoxDecoration(
                 color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: color, size: 24),
+              child: Icon(icon, color: color, size: 20), // Reduced icon size
             ),
             const Spacer(),
             FittedBox(
+              alignment: Alignment.centerLeft,
               fit: BoxFit.scaleDown,
               child: Text(
                 value,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 24,
+                  fontSize: 22, // Slightly smaller font
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             Text(
               title,
               style: TextStyle(
                 color: Colors.grey[400],
-                fontSize: 14,
+                fontSize: 13,
                 fontWeight: FontWeight.w500,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 4),
             Text(
               subtitle,
               style: TextStyle(
                 color: Colors.grey[600],
-                fontSize: 12,
+                fontSize: 11,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
