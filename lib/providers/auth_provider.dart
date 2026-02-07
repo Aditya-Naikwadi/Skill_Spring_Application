@@ -42,8 +42,17 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  int _loginAttempts = 0;
+  DateTime? _lockoutUntil;
+
   // Sign in with email
   Future<bool> signInWithEmail(String email, String password) async {
+    if (_lockoutUntil != null && DateTime.now().isBefore(_lockoutUntil!)) {
+      _error = 'Too many attempts. Try again later.';
+      notifyListeners();
+      return false;
+    }
+
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -51,10 +60,18 @@ class AuthProvider with ChangeNotifier {
     try {
       _currentUser = await _authService.signInWithEmail(email, password);
       _isLoading = false;
+      _loginAttempts = 0; // Reset on success
+      _lockoutUntil = null;
       notifyListeners();
       return _currentUser != null;
     } catch (e) {
-      _error = e.toString();
+      _loginAttempts++;
+      if (_loginAttempts >= 5) {
+        _lockoutUntil = DateTime.now().add(const Duration(minutes: 5));
+        _error = 'Too many failed attempts. Locked for 5 minutes.';
+      } else {
+        _error = e.toString();
+      }
       _isLoading = false;
       notifyListeners();
       return false;

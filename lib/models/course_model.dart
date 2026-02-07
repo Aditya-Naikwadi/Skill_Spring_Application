@@ -207,7 +207,7 @@ class CourseModel {
 
   // Get total duration in minutes
   int get totalDuration {
-    return modules.fold(0, (sum, module) => sum + module.durationMinutes);
+    return modules.fold(0, (total, module) => total + module.durationMinutes);
   }
 
   // Get module count

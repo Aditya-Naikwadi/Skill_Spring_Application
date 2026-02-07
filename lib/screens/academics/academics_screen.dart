@@ -95,114 +95,121 @@ class _AcademicsScreenState extends State<AcademicsScreen> with SingleTickerProv
   }
 
   Widget _buildCourseCard(Map<String, dynamic> course) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {},
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Thumbnail
-          Container(
-            height: 150,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppTheme.primaryColor,
-                  AppTheme.primaryColor.withOpacity(0.7),
-                ],
-              ),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12),
-                topRight: Radius.circular(12),
-              ),
-            ),
-            child: Center(
-              child: Icon(
-                course['icon'] as IconData,
-                size: 60,
-                color: Colors.white,
-              ),
-            ),
-          ),
-
-          // Content
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Title
-                Text(
-                  course['title'] as String,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-
-                // Description
-                Text(
-                  course['description'] as String,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppTheme.textSecondary,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 12),
-
-                // Info Row
-                Row(
-                  children: [
-                    _buildInfoChip(
-                      Icons.signal_cellular_alt,
-                      course['difficulty'] as String,
-                      AppTheme.successColor,
-                    ),
-                    const SizedBox(width: 8),
-                    _buildInfoChip(
-                      Icons.access_time,
-                      course['duration'] as String,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Thumbnail
+              Container(
+                height: 150,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
                       AppTheme.primaryColor,
+                      AppTheme.primaryColor.withValues(alpha: 0.7),
+                    ],
+                  ),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    topRight: Radius.circular(12),
+                  ),
+                ),
+                child: Center(
+                  child: Icon(
+                    course['icon'] as IconData,
+                    size: 60,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+
+              // Content
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title
+                    Text(
+                      course['title'] as String,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    const SizedBox(width: 8),
-                    _buildInfoChip(
-                      Icons.people_outline,
-                      course['enrolled'] as String,
-                      AppTheme.secondaryColor,
+                    const SizedBox(height: 8),
+
+                    // Description
+                    Text(
+                      course['description'] as String,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppTheme.textSecondary,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Info Row
+                    Row(
+                      children: [
+                        _buildInfoChip(
+                          Icons.signal_cellular_alt,
+                          course['difficulty'] as String,
+                          AppTheme.successColor,
+                        ),
+                        const SizedBox(width: 8),
+                        _buildInfoChip(
+                          Icons.access_time,
+                          course['duration'] as String,
+                          AppTheme.primaryColor,
+                        ),
+                        const SizedBox(width: 8),
+                        _buildInfoChip(
+                          Icons.people_outline,
+                          course['enrolled'] as String,
+                          AppTheme.secondaryColor,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Enroll Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.primaryColor,
+                          foregroundColor: Colors.white,
+                        ),
+                        child: const Text('Enroll Now'),
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
-
-                // Enroll Button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryColor,
-                      foregroundColor: Colors.white,
-                    ),
-                    child: const Text('Enroll Now'),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -211,7 +218,7 @@ class _AcademicsScreenState extends State<AcademicsScreen> with SingleTickerProv
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Row(

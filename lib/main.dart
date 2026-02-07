@@ -10,17 +10,28 @@ import 'screens/home/home_screen.dart';
 import 'screens/academics/academics_screen.dart';
 import 'screens/leaderboard/leaderboard_screen.dart';
 import 'screens/profile/profile_screen.dart';
+import 'screens/onboarding/onboarding_screen.dart';
+
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'widgets/auth/auth_guard.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
+  // Load environment variables
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    debugPrint('Error loading .env file: $e');
+  }
+
   // Initialize Firebase using the generated options
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
   } catch (e) {
-    print('Firebase initialization error: $e');
+    debugPrint('Firebase initialization error: $e');
   }
   
   runApp(const MyApp());
@@ -41,11 +52,12 @@ class MyApp extends StatelessWidget {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.light,
-        initialRoute: '/login',
+        initialRoute: '/onboarding',
         routes: {
+          '/onboarding': (context) => const OnboardingScreen(),
           '/login': (context) => const LoginScreen(),
           '/register': (context) => const RegisterScreen(),
-          '/home': (context) => const MainScreen(),
+          '/home': (context) => const AuthGuard(child: MainScreen()),
         },
       ),
     );
