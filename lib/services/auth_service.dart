@@ -123,18 +123,7 @@ class AuthService {
             .doc(result.user!.uid)
             .set(newUser.toMap());
 
-        // Initialize leaderboard entry
-        await _firestore.collection('leaderboard').doc(result.user!.uid).set({
-          'userId': result.user!.uid,
-          'userName': displayName,
-          'institution': institution,
-          'points': 0,
-          'rank': 0,
-          'coursesCompleted': 0,
-          'projectsCompleted': 0,
-          'badges': [],
-          'lastUpdated': FieldValue.serverTimestamp(),
-        });
+
 
         return newUser;
       }

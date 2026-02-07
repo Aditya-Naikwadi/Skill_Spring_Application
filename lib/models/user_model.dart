@@ -28,6 +28,7 @@ class UserModel {
   final List<String> completedCourses;
   final int points;
   final int rank;
+  final int streak;
   final String? profilePictureUrl;
   final DateTime createdAt;
   final DateTime lastLoginAt;
@@ -43,6 +44,7 @@ class UserModel {
     this.completedCourses = const [],
     this.points = 0,
     this.rank = 0,
+    this.streak = 0,
     this.profilePictureUrl,
     required this.createdAt,
     required this.lastLoginAt,
@@ -61,6 +63,7 @@ class UserModel {
       'completedCourses': completedCourses,
       'points': points,
       'rank': rank,
+      'streak': streak,
       'profilePictureUrl': profilePictureUrl,
       'createdAt': Timestamp.fromDate(createdAt),
       'lastLoginAt': Timestamp.fromDate(lastLoginAt),
@@ -83,6 +86,7 @@ class UserModel {
       completedCourses: List<String>.from(map['completedCourses'] ?? []),
       points: map['points'] ?? 0,
       rank: map['rank'] ?? 0,
+      streak: map['streak'] ?? 0,
       profilePictureUrl: map['profilePictureUrl'],
       createdAt: (map['createdAt'] as Timestamp).toDate(),
       lastLoginAt: (map['lastLoginAt'] as Timestamp).toDate(),
@@ -101,6 +105,7 @@ class UserModel {
     List<String>? completedCourses,
     int? points,
     int? rank,
+    int? streak,
     String? profilePictureUrl,
     DateTime? createdAt,
     DateTime? lastLoginAt,
@@ -116,6 +121,7 @@ class UserModel {
       completedCourses: completedCourses ?? this.completedCourses,
       points: points ?? this.points,
       rank: rank ?? this.rank,
+      streak: streak ?? this.streak,
       profilePictureUrl: profilePictureUrl ?? this.profilePictureUrl,
       createdAt: createdAt ?? this.createdAt,
       lastLoginAt: lastLoginAt ?? this.lastLoginAt,

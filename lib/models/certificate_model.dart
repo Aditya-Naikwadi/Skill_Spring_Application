@@ -3,51 +3,43 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class CertificateModel {
   final String id;
   final String userId;
-  final String courseId;
-  final String courseName;
   final String userName;
-  final DateTime issueDate;
+  final String courseId;
+  final String courseTitle;
   final String certificateUrl;
-  final String verificationCode;
-  final double completionScore;
+  final DateTime issuedAt;
 
   CertificateModel({
     required this.id,
     required this.userId,
-    required this.courseId,
-    required this.courseName,
     required this.userName,
-    required this.issueDate,
+    required this.courseId,
+    required this.courseTitle,
     required this.certificateUrl,
-    required this.verificationCode,
-    this.completionScore = 100.0,
+    required this.issuedAt,
   });
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'userId': userId,
-      'courseId': courseId,
-      'courseName': courseName,
       'userName': userName,
-      'issueDate': Timestamp.fromDate(issueDate),
+      'courseId': courseId,
+      'courseTitle': courseTitle,
       'certificateUrl': certificateUrl,
-      'verificationCode': verificationCode,
-      'completionScore': completionScore,
+      'issuedAt': Timestamp.fromDate(issuedAt),
     };
   }
 
-  factory CertificateModel.fromMap(Map<String, dynamic> map) {
+  factory CertificateModel.fromSnapshot(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
     return CertificateModel(
-      id: map['id'] ?? '',
-      userId: map['userId'] ?? '',
-      courseId: map['courseId'] ?? '',
-      courseName: map['courseName'] ?? '',
-      userName: map['userName'] ?? '',
-      issueDate: (map['issueDate'] as Timestamp).toDate(),
-      certificateUrl: map['certificateUrl'] ?? '',
-      verificationCode: map['verificationCode'] ?? '',
-      completionScore: (map['completionScore'] ?? 100.0).toDouble(),
+      id: doc.id,
+      userId: data['userId'] ?? '',
+      userName: data['userName'] ?? '',
+      courseId: data['courseId'] ?? '',
+      courseTitle: data['courseTitle'] ?? '',
+      certificateUrl: data['certificateUrl'] ?? '',
+      issuedAt: (data['issuedAt'] as Timestamp).toDate(),
     );
   }
 }

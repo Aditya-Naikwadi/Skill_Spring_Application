@@ -132,7 +132,7 @@ class ProfileScreen extends StatelessWidget {
                       Expanded(
                         child: _buildStatCard(
                           'Learning Streak',
-                          '7 days',
+                          '${user.streak} days',
                           Icons.local_fire_department,
                           Colors.deepOrange,
                         ),

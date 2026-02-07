@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../config/theme.dart';
 import '../../utils/constants.dart';
+import '../../services/database_service.dart';
+import '../../models/course_model.dart';
 
 class AcademicsScreen extends StatefulWidget {
   const AcademicsScreen({super.key});
@@ -20,6 +22,8 @@ class _AcademicsScreenState extends State<AcademicsScreen> with SingleTickerProv
       length: AppConstants.courseCategories.length,
       vsync: this,
     );
+    // Seed initial data if testing
+    DatabaseService().seedInitialCourses();
   }
 
   @override
@@ -81,20 +85,38 @@ class _AcademicsScreenState extends State<AcademicsScreen> with SingleTickerProv
   }
 
   Widget _buildCourseList(String category) {
-    // Placeholder courses
-    final courses = _getPlaceholderCourses(category);
+    return StreamBuilder<List<CourseModel>>(
+      stream: DatabaseService().getCourses(category == 'All' ? 'All' : category),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: courses.length,
-      itemBuilder: (context, index) {
-        final course = courses[index];
-        return _buildCourseCard(course);
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final courses = snapshot.data ?? [];
+
+        if (courses.isEmpty) {
+          return const Center(
+            child: Text('No courses available.'),
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: courses.length,
+          itemBuilder: (context, index) {
+            final course = courses[index];
+            return _buildCourseCard(course);
+          },
+        );
       },
     );
   }
 
-  Widget _buildCourseCard(Map<String, dynamic> course) {
+  Widget _buildCourseCard(CourseModel course) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -133,7 +155,7 @@ class _AcademicsScreenState extends State<AcademicsScreen> with SingleTickerProv
                 ),
                 child: Center(
                   child: Icon(
-                    course['icon'] as IconData,
+                    IconData(int.tryParse(course.iconCode) ?? 57347, fontFamily: 'MaterialIcons'),
                     size: 60,
                     color: Colors.white,
                   ),
@@ -148,7 +170,7 @@ class _AcademicsScreenState extends State<AcademicsScreen> with SingleTickerProv
                   children: [
                     // Title
                     Text(
-                      course['title'] as String,
+                      course.title,
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -158,7 +180,7 @@ class _AcademicsScreenState extends State<AcademicsScreen> with SingleTickerProv
 
                     // Description
                     Text(
-                      course['description'] as String,
+                      course.description,
                       style: TextStyle(
                         fontSize: 14,
                         color: AppTheme.textSecondary,
@@ -173,19 +195,19 @@ class _AcademicsScreenState extends State<AcademicsScreen> with SingleTickerProv
                       children: [
                         _buildInfoChip(
                           Icons.signal_cellular_alt,
-                          course['difficulty'] as String,
+                          course.difficulty,
                           AppTheme.successColor,
                         ),
                         const SizedBox(width: 8),
                         _buildInfoChip(
                           Icons.access_time,
-                          course['duration'] as String,
+                          course.duration,
                           AppTheme.primaryColor,
                         ),
                         const SizedBox(width: 8),
                         _buildInfoChip(
                           Icons.people_outline,
-                          course['enrolled'] as String,
+                          '${course.enrolledCount}',
                           AppTheme.secondaryColor,
                         ),
                       ],
@@ -239,54 +261,5 @@ class _AcademicsScreenState extends State<AcademicsScreen> with SingleTickerProv
     );
   }
 
-  List<Map<String, dynamic>> _getPlaceholderCourses(String category) {
-    if (category == 'All') {
-      return [
-        {
-          'title': 'Python for Beginners',
-          'description': 'Learn Python programming from scratch with hands-on projects',
-          'difficulty': 'Beginner',
-          'duration': '8 weeks',
-          'enrolled': '1.2K',
-          'icon': Icons.code,
-        },
-        {
-          'title': 'Web Development Bootcamp',
-          'description': 'Master HTML, CSS, JavaScript and build real-world websites',
-          'difficulty': 'Intermediate',
-          'duration': '12 weeks',
-          'enrolled': '2.5K',
-          'icon': Icons.web,
-        },
-        {
-          'title': 'Data Structures & Algorithms',
-          'description': 'Master DSA concepts and ace coding interviews',
-          'difficulty': 'Advanced',
-          'duration': '10 weeks',
-          'enrolled': '890',
-          'icon': Icons.account_tree,
-        },
-      ];
-    }
-    
-    // Return category-specific courses
-    return [
-      {
-        'title': '$category Fundamentals',
-        'description': 'Learn the basics of $category programming',
-        'difficulty': 'Beginner',
-        'duration': '6 weeks',
-        'enrolled': '500',
-        'icon': Icons.code,
-      },
-      {
-        'title': 'Advanced $category',
-        'description': 'Deep dive into advanced $category concepts',
-        'difficulty': 'Advanced',
-        'duration': '8 weeks',
-        'enrolled': '300',
-        'icon': Icons.code,
-      },
-    ];
-  }
+
 }

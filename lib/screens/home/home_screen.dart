@@ -4,6 +4,8 @@ import '../../providers/auth_provider.dart';
 import '../../config/theme.dart';
 import '../../utils/helpers.dart';
 import '../../widgets/course_card.dart';
+import '../../services/database_service.dart';
+import '../../models/course_model.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -254,22 +256,46 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildPlaceholderCourses() {
-    return Column(
-      children: [
-        _buildPlaceholderCourseCard('Python for Beginners', 'Learn Python from scratch'),
-        const SizedBox(height: 12),
-        _buildPlaceholderCourseCard('Web Development', 'Build modern websites'),
-        const SizedBox(height: 12),
-        _buildPlaceholderCourseCard('Data Structures', 'Master algorithms'),
-      ],
+    return StreamBuilder<List<CourseModel>>(
+      stream: DatabaseService().getCourses('All'),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+
+        final courses = snapshot.data ?? [];
+        if (courses.isEmpty) {
+          return const Center(child: Text('No courses available.'));
+        }
+
+        // Show top 3 courses as featured
+        final featuredCourses = courses.take(3).toList();
+
+        return Column(
+          children: featuredCourses.map((course) {
+            return Column(
+              children: [
+                _buildCourseCard(context, course),
+                const SizedBox(height: 12),
+              ],
+            );
+          }).toList(),
+        );
+      },
     );
   }
 
-  Widget _buildPlaceholderCourseCard(String title, String description) {
+  Widget _buildCourseCard(BuildContext context, CourseModel course) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          // Navigate to course details
+        },
         borderRadius: BorderRadius.circular(12),
         child: Container(
           padding: const EdgeInsets.all(16),
@@ -293,8 +319,8 @@ class HomeScreen extends StatelessWidget {
                   color: AppTheme.primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(
-                  Icons.code,
+                child: Icon(
+                  course.iconData, // Use the getter from CourseModel
                   color: AppTheme.primaryColor,
                   size: 30,
                 ),
@@ -305,7 +331,7 @@ class HomeScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      title,
+                      course.title,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -313,7 +339,9 @@ class HomeScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      description,
+                      course.description,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 14,
                         color: AppTheme.textSecondary,
