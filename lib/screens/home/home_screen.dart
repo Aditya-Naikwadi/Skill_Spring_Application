@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/common/hover_scale_button.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../config/theme.dart';
@@ -8,8 +9,22 @@ import '../../widgets/dashboard/activity_item.dart';
 import '../../services/database_service.dart';
 import '../../models/course_model.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late Stream<List<CourseModel>> _coursesStream;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize stream only once with a limit for better performance
+    _coursesStream = DatabaseService().getCourses('All', limit: 5);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +102,7 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 24),
             sliver: SliverToBoxAdapter(
               child: SizedBox(
-                height: 140, // Fixed height for cards
+                height: 170, // Increased height to prevent overflow
                 child: Row(
                   children: [
                     Expanded(
@@ -198,7 +213,7 @@ class HomeScreen extends StatelessWidget {
             child: SizedBox(
               height: 240,
               child: StreamBuilder<List<CourseModel>>(
-                stream: DatabaseService().getCourses('All'), // Or 'Recommended'
+                stream: _coursesStream, // Use initialized stream
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -212,126 +227,132 @@ class HomeScreen extends StatelessWidget {
                     itemCount: courses.length,
                     itemBuilder: (context, index) {
                       final course = courses[index];
-                      return Container(
-                        width: 280,
-                        margin: const EdgeInsets.only(right: 16),
-                        decoration: BoxDecoration(
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 16, bottom: 8), // Add bottom padding for shadow
+                        child: HoverScaleButton(
+                          onPressed: () {
+                             // TODO: Navigate to course details
+                          },
+                          width: 280,
+                          height: double.infinity,
                           color: const Color(0xFF161B22),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Cover Image (or gradient placeholder)
-                            Container(
-                              height: 120,
-                              decoration: BoxDecoration(
-                                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Colors.blue.withValues(alpha: 0.2),
-                                    Colors.purple.withValues(alpha: 0.2),
-                                  ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                              ),
-                              child: Stack(
-                                children: [
-                                  Center(
-                                    child: Icon(
-                                      course.iconData,
-                                      size: 48,
-                                      color: Colors.white.withValues(alpha: 0.8),
-                                    ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Cover Image (or gradient placeholder)
+                              Container(
+                                height: 120,
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Colors.blue.withValues(alpha: 0.2),
+                                      Colors.purple.withValues(alpha: 0.2),
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
                                   ),
-                                  if (course.category == 'Development') // Mock tag
-                                    Positioned(
-                                      top: 12,
-                                      left: 12,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: Colors.black.withValues(alpha: 0.6),
-                                          borderRadius: BorderRadius.circular(4),
-                                        ),
-                                        child: Text(
-                                          'FULL STACK', // Mock
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.bold,
+                                ),
+                                child: Stack(
+                                  children: [
+                                    Center(
+                                      child: Icon(
+                                        course.iconData,
+                                        size: 48,
+                                        color: Colors.white.withValues(alpha: 0.8),
+                                      ),
+                                    ),
+                                    if (course.category == 'Development') // Mock tag
+                                      Positioned(
+                                        top: 12,
+                                        left: 12,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            color: Colors.black.withValues(alpha: 0.6),
+                                            borderRadius: BorderRadius.circular(4),
+                                          ),
+                                          child: Text(
+                                            'FULL STACK', // Mock
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    course.title,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    course.description,
-                                    style: TextStyle(
-                                      color: Colors.grey[400],
-                                      fontSize: 12,
-                                    ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              Expanded( // Make valid use of space
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
+                                      Text(
+                                        course.title,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Expanded(
+                                        child: Text(
+                                          course.description,
+                                          style: TextStyle(
+                                            color: Colors.grey[400],
+                                            fontSize: 12,
+                                          ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 12),
                                       Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Icon(Icons.access_time, size: 14, color: Colors.grey[500]),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            course.duration,
-                                            style: TextStyle(
-                                              color: Colors.grey[500],
-                                              fontSize: 12,
+                                          Row(
+                                            children: [
+                                              Icon(Icons.access_time, size: 14, color: Colors.grey[500]),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                course.duration,
+                                                style: TextStyle(
+                                                  color: Colors.grey[500],
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                            decoration: BoxDecoration(
+                                              color: Colors.blue,
+                                              borderRadius: BorderRadius.circular(20),
+                                            ),
+                                            child: const Text(
+                                              'Enroll',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
                                           ),
                                         ],
                                       ),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                        decoration: BoxDecoration(
-                                          color: Colors.blue,
-                                          borderRadius: BorderRadius.circular(20),
-                                        ),
-                                        child: const Text(
-                                          'Enroll',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
                                     ],
                                   ),
-                                ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       );
                     },

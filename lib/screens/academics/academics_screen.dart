@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:animate_do/animate_do.dart';
 import '../../config/theme.dart';
 import '../../utils/constants.dart';
 import '../../widgets/academics/folder_card.dart';
@@ -125,31 +126,34 @@ class _AcademicsScreenState extends State<AcademicsScreen> with SingleTickerProv
 
     return GridView.builder(
       padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2, // 2 columns
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 250, // Responsive width
         crossAxisSpacing: 16,
         mainAxisSpacing: 16,
-        childAspectRatio: 0.85, // Adjust aspect ratio for card content
+        childAspectRatio: 0.85,
       ),
       itemCount: categories.length,
       itemBuilder: (context, index) {
         final category = categories[index];
-        return FolderCard(
-          title: category['name'],
-          subtitle: category['description'],
-          icon: category['icon'],
-          color: category['color'],
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SubjectDetailsScreen(
-                  category: category['name'],
-                  type: type,
+        return FadeInUp(
+          delay: Duration(milliseconds: index * 50), // Staggered animation
+          child: FolderCard(
+            title: category['name'],
+            subtitle: category['description'],
+            icon: category['icon'],
+            color: category['color'],
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SubjectDetailsScreen(
+                    category: category['name'],
+                    type: type,
+                  ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         );
       },
     );

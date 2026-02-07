@@ -18,10 +18,13 @@ class DatabaseService {
   CollectionReference get _usersCollection => _firestore.collection(AppConstants.collectionUsers);
 
   // --- Courses ---
-  Stream<List<CourseModel>> getCourses(String category) {
+  Stream<List<CourseModel>> getCourses(String category, {int? limit}) {
     Query query = _coursesCollection.orderBy('createdAt', descending: true);
     if (category != 'All' && category != 'Recommended') { // Added Recommended check if needed
        query = query.where('category', isEqualTo: category);
+    }
+    if (limit != null) {
+      query = query.limit(limit);
     }
     return query.snapshots().map((snapshot) {
       return snapshot.docs.map((doc) => CourseModel.fromSnapshot(doc)).toList();
@@ -226,7 +229,9 @@ class DatabaseService {
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) {
-        return UserModel.fromMap(doc.data() as Map<String, dynamic>);
+        final data = doc.data();
+        // Ensure data is treated as a Map, handling potential nullability check from analyzer
+        return UserModel.fromMap(data as Map<String, dynamic>);
       }).toList();
     });
   }

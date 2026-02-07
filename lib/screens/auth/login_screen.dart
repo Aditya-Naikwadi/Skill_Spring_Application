@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import '../../providers/auth_provider.dart';
-import '../../widgets/auth/social_button.dart';
+// unused import removed
 import '../../widgets/common/hover_scale_button.dart';
 import '../../utils/validators.dart';
 

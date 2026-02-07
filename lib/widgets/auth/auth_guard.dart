@@ -18,6 +18,15 @@ class AuthGuard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
       builder: (context, auth, _) {
+        // 0. Check if auth check is complete
+        if (!auth.isAuthCheckComplete) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
         // 1. Check if authenticated
         if (!auth.isAuthenticated) {
           // If not authenticated, redirect to Onboarding/Login

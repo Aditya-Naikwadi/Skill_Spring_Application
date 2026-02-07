@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+// unused import removed
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -38,14 +38,14 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static FirebaseOptions get web => FirebaseOptions(
-    apiKey: dotenv.env['FIREBASE_API_KEY']!,
-    appId: dotenv.env['FIREBASE_APP_ID']!,
-    messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID']!,
-    projectId: dotenv.env['FIREBASE_PROJECT_ID']!,
-    authDomain: dotenv.env['FIREBASE_AUTH_DOMAIN'],
-    storageBucket: dotenv.env['FIREBASE_STORAGE_BUCKET'],
-    measurementId: dotenv.env['FIREBASE_MEASUREMENT_ID'],
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyD_3T114jrJIeQDPJqrB6-u2ScxBRvxP3U',
+    appId: '1:1003688930828:web:b2be22bd7f0d95b4168829',
+    messagingSenderId: '1003688930828',
+    projectId: 'skillspring-144dd',
+    authDomain: 'skillspring-144dd.firebaseapp.com',
+    storageBucket: 'skillspring-144dd.firebasestorage.app',
+    measurementId: 'G-F78XZ0ZZZ1',
   );
 
   static const FirebaseOptions android = FirebaseOptions(

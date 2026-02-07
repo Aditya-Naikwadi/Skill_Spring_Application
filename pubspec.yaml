@@ -50,6 +50,7 @@ dependencies:
   animate_do: ^4.2.0
   glassmorphism: ^3.0.0
   flutter_dotenv: ^6.0.0
+  http: ^1.6.0
 
 dev_dependencies:
   flutter_test:

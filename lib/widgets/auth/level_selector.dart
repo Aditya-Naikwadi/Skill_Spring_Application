@@ -67,7 +67,7 @@ class LevelSelector extends StatelessWidget {
         onTap: () => onLevelSelected(level),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          height: 80,
+          height: 90,
           decoration: BoxDecoration(
             color: isSelected
                 ? const Color(0xFF1976D2).withValues(alpha: 0.1)
@@ -78,25 +78,31 @@ class LevelSelector extends StatelessWidget {
               width: isSelected ? 2 : 1,
             ),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                color: isSelected ? const Color(0xFF2196F3) : Colors.grey,
-                size: 24,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                label,
-                style: GoogleFonts.poppins(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  icon,
                   color: isSelected ? const Color(0xFF2196F3) : Colors.grey,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
+                  size: 20, // Slightly smaller icon
                 ),
-              ),
-            ],
+                const SizedBox(height: 4), // Reduced spacing
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    label,
+                    style: GoogleFonts.poppins(
+                      color: isSelected ? const Color(0xFF2196F3) : Colors.grey,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

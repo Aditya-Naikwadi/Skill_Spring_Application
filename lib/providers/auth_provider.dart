@@ -8,10 +8,12 @@ class AuthProvider with ChangeNotifier {
   
   UserModel? _currentUser;
   bool _isLoading = false;
+  bool _isAuthCheckComplete = false; // Added flag
   String? _error;
 
   UserModel? get currentUser => _currentUser;
   bool get isLoading => _isLoading;
+  bool get isAuthCheckComplete => _isAuthCheckComplete; // Getter
   String? get error => _error;
   bool get isAuthenticated => _currentUser != null;
 
@@ -26,8 +28,9 @@ class AuthProvider with ChangeNotifier {
         await _loadUserData(user.uid);
       } else {
         _currentUser = null;
-        notifyListeners();
       }
+      _isAuthCheckComplete = true; // Mark check as complete
+      notifyListeners();
     });
   }
 

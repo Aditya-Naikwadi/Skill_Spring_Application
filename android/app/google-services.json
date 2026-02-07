@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1003688930828",
+    "project_id": "skillspring-144dd",
+    "storage_bucket": "skillspring-144dd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1003688930828:android:097ab1f448258c51168829",
+        "android_client_info": {
+          "package_name": "com.skillspring.skill_spring"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD60n90_Ie9jOLsXt-1uBpIyh8dXdU45CQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

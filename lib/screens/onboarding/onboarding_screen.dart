@@ -304,7 +304,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         child: Icon(
                           content.icon,
                           size: iconSize,
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                         ),
                       ),
                     ),
@@ -315,7 +315,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       child: FadeInDown(
                         delay: const Duration(milliseconds: 400),
                         child: FloatingItem(
-                          delay: 0,
                           child: Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
@@ -343,7 +342,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       child: FadeInUp(
                         delay: const Duration(milliseconds: 600),
                         child: FloatingItem(
-                           delay: 1.5,
                           child: Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
@@ -507,9 +505,7 @@ class _HoverScaleButtonState extends State<HoverScaleButton>
 
 class FloatingItem extends StatefulWidget {
   final Widget child;
-  final double delay;
-
-  const FloatingItem({super.key, required this.child, this.delay = 0});
+  const FloatingItem({super.key, required this.child});
 
   @override
   State<FloatingItem> createState() => _FloatingItemState();
@@ -527,8 +523,6 @@ class _FloatingItemState extends State<FloatingItem>
       vsync: this,
       duration: const Duration(seconds: 3),
     )..repeat(reverse: true);
-    
-    // Add logic to start with delay if needed, but for simplicity just running here
     
     _animation = Tween<double>(begin: 0, end: 10).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
