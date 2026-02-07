@@ -11,16 +11,30 @@ class AppConstants {
 
   // Course Categories
   static const List<String> courseCategories = [
-    'All',
-    'Python',
-    'Java',
-    'JavaScript',
-    'C++',
-    'Web Development',
-    'Mobile Development',
-    'Data Science',
-    'Machine Learning',
+    'Programming Fundamentals',
+    'Data Structures & Algorithms',
+    'Computer Organization & Architecture',
+    'Operating Systems',
+    'Database Management Systems',
+    'Computer Networks',
+    'Discrete Mathematics',
+    'Software Engineering',
+    'Theory of Computation',
+    'Object-Oriented Programming',
   ];
+
+  static const Map<String, String> categoryDescriptions = {
+    'Programming Fundamentals': 'Logic & Syntax',
+    'Data Structures & Algorithms': 'Problem Solving',
+    'Computer Organization & Architecture': 'Hardware/Software Interface',
+    'Operating Systems': 'System Management',
+    'Database Management Systems': 'Data Storage',
+    'Computer Networks': 'Connectivity & Protocols',
+    'Discrete Mathematics': 'Computational Logic',
+    'Software Engineering': 'Development Lifecycle',
+    'Theory of Computation': 'Automata & Languages',
+    'Object-Oriented Programming': 'Design Patterns',
+  };
 
   // Difficulty Levels
   static const String difficultyBeginner = 'Beginner';
@@ -41,9 +55,11 @@ class AppConstants {
   // Firebase Collections
   static const String collectionUsers = 'users';
   static const String collectionCourses = 'courses';
+  static const String collectionProjects = 'projects';
   static const String collectionLeaderboard = 'leaderboard';
   static const String collectionProgress = 'progress';
-  static const String collectionCertificates = 'certificates';
+  static const String collectionCertificates = 'certificates'; // User issued certificates
+  static const String collectionCertificatePrograms = 'certificate_programs'; // Available programs
 
   // Storage Paths
   static const String storageProfilePictures = 'profile_pictures';

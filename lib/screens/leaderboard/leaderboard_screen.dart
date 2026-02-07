@@ -34,13 +34,15 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
     final currentUser = authProvider.currentUser;
 
     return Scaffold(
+      backgroundColor: const Color(0xFF0D1117),
       appBar: AppBar(
-        title: const Text('Leaderboard'),
+        title: const Text('Global Leaderboard', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: const Color(0xFF161B22),
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: AppTheme.primaryColor,
-          labelColor: AppTheme.primaryColor,
-          unselectedLabelColor: AppTheme.textSecondary,
+          indicatorColor: Colors.blue,
+          labelColor: Colors.blue,
+          unselectedLabelColor: Colors.grey,
           tabs: const [
             Tab(text: 'Weekly'),
             Tab(text: 'Monthly'),
@@ -56,7 +58,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
           }
           
           if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(child: Text('Error: ${snapshot.error}', style: const TextStyle(color: Colors.white)));
           }
 
           final users = snapshot.data ?? [];
@@ -65,19 +67,18 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
             children: [
               // Top 3 Podium
               Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      AppTheme.primaryColor.withValues(alpha: 0.1),
-                      Colors.transparent,
-                    ],
+                padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+                decoration: const BoxDecoration(
+                  color: Color(0xFF161B22),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(24),
+                    bottomRight: Radius.circular(24),
                   ),
                 ),
                 child: _buildPodium(users),
               ),
+
+              const SizedBox(height: 16),
 
               // User's Rank Card
               if (currentUser != null)
@@ -85,21 +86,18 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                    color: Colors.blue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppTheme.primaryColor, width: 2),
+                    border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
                   ),
                   child: Row(
                     children: [
                       CircleAvatar(
-                        radius: 24,
-                        backgroundColor: AppTheme.primaryColor,
-                        child: Text(
+                        radius: 20,
+                        backgroundColor: Colors.blue,
+                         child: Text(
                           Helpers.getInitials(currentUser.displayName),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -108,17 +106,17 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Your Rank',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: AppTheme.textSecondary,
-                              ),
-                            ),
-                            Text(
                               currentUser.displayName,
                               style: const TextStyle(
-                                fontSize: 16,
+                                color: Colors.white,
                                 fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                             Text(
+                              '${currentUser.streak} Day Streak',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[400],
                               ),
                             ),
                           ],
@@ -130,16 +128,16 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                           Text(
                             '#${currentUser.rank}',
                             style: const TextStyle(
-                              fontSize: 24,
+                              fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              color: AppTheme.primaryColor,
+                              color: Colors.white,
                             ),
                           ),
                           Text(
-                            '${currentUser.points} pts',
-                            style: TextStyle(
+                            '${currentUser.points} XP',
+                            style: const TextStyle(
                               fontSize: 12,
-                              color: AppTheme.textSecondary,
+                              color: Colors.blue,
                             ),
                           ),
                         ],
@@ -150,14 +148,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
 
               // Leaderboard List
               Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildLeaderboardList(users),
-                    _buildLeaderboardList(users), // Reuse for tabs for now
-                    _buildLeaderboardList(users),
-                  ],
-                ),
+                child: _buildLeaderboardList(users),
               ),
             ],
           );
@@ -169,9 +160,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
   Widget _buildPodium(List<UserModel> users) {
     if (users.isEmpty) return const SizedBox.shrink();
     
-    // Sort just in case, though Firestore does it.
-    // users.sort((a, b) => b.points.compareTo(a.points)); // Already sorted by query
-
     final first = users.isNotEmpty ? users[0] : null;
     final second = users.length > 1 ? users[1] : null;
     final third = users.length > 2 ? users[2] : null;
@@ -180,88 +168,77 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        // 2nd Place
-        if (second != null)
-          _buildPodiumItem(2, second.displayName, second.points, Colors.grey[400]!),
+        if (second != null) _buildPodiumItem(2, second, Colors.teal),
         const SizedBox(width: 16),
-        // 1st Place
-        if (first != null)
-          _buildPodiumItem(1, first.displayName, first.points, AppTheme.warningColor),
+        if (first != null) _buildPodiumItem(1, first, Colors.amber),
         const SizedBox(width: 16),
-        // 3rd Place
-        if (third != null)
-          _buildPodiumItem(3, third.displayName, third.points, Colors.brown[300]!),
+        if (third != null) _buildPodiumItem(3, third, Colors.orange),
       ],
     );
   }
 
-  Widget _buildPodiumItem(int rank, String name, int points, Color color) {
-    final heights = {1: 120.0, 2: 90.0, 3: 70.0};
-    final sizes = {1: 50.0, 2: 40.0, 3: 35.0};
+  Widget _buildPodiumItem(int rank, UserModel user, Color color) {
+    final isFirst = rank == 1;
+    final avatarSize = isFirst ? 40.0 : 30.0;
+    final height = isFirst ? 140.0 : 100.0;
 
     return Column(
-      mainAxisSize: MainAxisSize.min,
       children: [
         Stack(
           alignment: Alignment.topCenter,
           children: [
-            CircleAvatar(
-              radius: sizes[rank]!,
-              backgroundColor: color,
-              child: Text(
-                Helpers.getInitials(name),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
+            Container(
+              padding: const EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: color, width: 2),
+              ),
+              child: CircleAvatar(
+                radius: avatarSize,
+                backgroundColor: color.withValues(alpha: 0.2),
+                child: Text(
+                  Helpers.getInitials(user.displayName),
+                  style: TextStyle(
+                    color: color,
+                    fontWeight: FontWeight.bold,
+                    fontSize: isFirst ? 20 : 16,
+                  ),
                 ),
               ),
             ),
-            if (rank == 1)
+            if (isFirst)
               Positioned(
-                top: -5,
-                child: Icon(
-                  Icons.emoji_events,
-                  color: AppTheme.warningColor,
-                  size: 24,
-                ),
+                top: -10,
+                child: Icon(Icons.emoji_events, color: Colors.amber, size: 24),
               ),
           ],
         ),
         const SizedBox(height: 8),
         Text(
-          name.split(' ')[0],
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-          ),
+          user.displayName.split(' ')[0], // First name only
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         Text(
-          '$points pts',
-          style: TextStyle(
-            fontSize: 12,
-            color: AppTheme.textSecondary,
-          ),
+          '${user.points} XP',
+          style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         Container(
-          width: 80,
-          height: heights[rank],
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.3),
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(8),
-              topRight: Radius.circular(8),
+          width: isFirst ? 80 : 70,
+          height: height,
+           decoration: BoxDecoration(
+            color: const Color(0xFF0D1117),
+            borderRadius: const BorderRadius.only(topLeft: Radius.circular(8), topRight: Radius.circular(8)),
+            border: Border(
+              top: BorderSide(color: color.withValues(alpha: 0.5), width: 4),
+              left: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
+              right: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
             ),
           ),
           child: Center(
             child: Text(
-              '#$rank',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
+              '$rank',
+              style: TextStyle(color: color, fontSize: 32, fontWeight: FontWeight.bold),
             ),
           ),
         ),
@@ -270,14 +247,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
   }
 
   Widget _buildLeaderboardList(List<UserModel> users) {
-    // Skip top 3 for list if we showed them in podium, or just show all but maybe highlight top 3?
-    // Let's show all starting from rank 4 effectively in the list view if we want to mimic the previous design.
-    // Or just show everyone. The previous design started list from index 4.
-    
     final listUsers = users.length > 3 ? users.sublist(3) : <UserModel>[];
 
     if (listUsers.isEmpty) {
-      return const Center(child: Text("No other users yet."));
+      return const Center(child: Text("No other users yet.", style: TextStyle(color: Colors.grey)));
     }
 
     return ListView.builder(
@@ -285,101 +258,51 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
       itemCount: listUsers.length,
       itemBuilder: (context, index) {
         final user = listUsers[index];
-        final rank = index + 4; // Top 3 are on podium
+        final rank = index + 4;
 
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: const Color(0xFF161B22),
             borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 5,
-                offset: const Offset(0, 2),
-              ),
-            ],
           ),
           child: Row(
             children: [
-              // Rank
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Center(
-                  child: Text(
-                    '#$rank',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.primaryColor,
-                    ),
-                  ),
+              SizedBox(
+                width: 30,
+                child: Text(
+                  '$rank',
+                  style: TextStyle(color: Colors.grey[500], fontWeight: FontWeight.bold),
                 ),
               ),
-              const SizedBox(width: 12),
-
-              // Avatar
               CircleAvatar(
-                radius: 24,
-                backgroundColor: Color(Helpers.getColorFromString(user.displayName)),
+                radius: 18,
+                backgroundColor: Colors.grey[800],
                 child: Text(
                   Helpers.getInitials(user.displayName),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: const TextStyle(color: Colors.white, fontSize: 12),
                 ),
               ),
               const SizedBox(width: 12),
-
-              // Name and Institution
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       user.displayName,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      user.institution,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppTheme.textSecondary,
-                      ),
+                      '${user.streak} day streak',
+                      style: TextStyle(color: Colors.grey[500], fontSize: 12),
                     ),
                   ],
                 ),
               ),
-
-              // Points
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    '${user.points}',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.primaryColor,
-                    ),
-                  ),
-                  Text(
-                    'points',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppTheme.textSecondary,
-                    ),
-                  ),
-                ],
+              Text(
+                '${user.points} XP',
+                style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
               ),
             ],
           ),

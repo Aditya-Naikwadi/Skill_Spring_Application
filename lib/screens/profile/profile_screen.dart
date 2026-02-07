@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../config/theme.dart';
 import '../../utils/helpers.dart';
+import '../../widgets/profile/badges_grid.dart'; // Import BadgesGrid
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -14,36 +15,43 @@ class ProfileScreen extends StatelessWidget {
 
     if (user == null) {
       return const Scaffold(
+        backgroundColor: Color(0xFF0D1117),
         body: Center(child: CircularProgressIndicator()),
       );
     }
 
     return Scaffold(
+      backgroundColor: const Color(0xFF0D1117),
       body: CustomScrollView(
         slivers: [
           // Profile Header
           SliverAppBar(
-            expandedHeight: 250,
+            expandedHeight: 280,
             pinned: true,
+            backgroundColor: const Color(0xFF161B22),
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 decoration: const BoxDecoration(
-                  gradient: AppTheme.primaryGradient,
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF161B22), Color(0xFF0D1117)],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
                 ),
                 child: SafeArea(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const SizedBox(height: 40),
+                       const SizedBox(height: 20),
                       CircleAvatar(
                         radius: 50,
-                        backgroundColor: Colors.white,
+                        backgroundColor: AppTheme.primaryColor,
                         child: Text(
                           Helpers.getInitials(user.displayName),
                           style: const TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
-                            color: AppTheme.primaryColor,
+                            color: Colors.white,
                           ),
                         ),
                       ),
@@ -59,25 +67,26 @@ class ProfileScreen extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         user.institution,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
-                          color: Colors.white70,
+                          color: Colors.grey[400],
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 12),
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: AppTheme.warningColor,
+                          color: AppTheme.warningColor.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: AppTheme.warningColor),
                         ),
                         child: Text(
                           'Rank #${user.rank}',
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: AppTheme.warningColor,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -89,50 +98,38 @@ class ProfileScreen extends StatelessWidget {
             ),
           ),
 
-          // Stats
+          // Stats & Content
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Stats Row
                   Row(
                     children: [
                       Expanded(
                         child: _buildStatCard(
-                          'Courses Completed',
+                          'Courses',
                           '${user.completedCourses.length}',
-                          Icons.check_circle,
-                          AppTheme.successColor,
+                          Icons.check_circle_outline,
+                          Colors.green,
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: _buildStatCard(
-                          'Total Points',
+                          'Points',
                           '${user.points}',
                           Icons.stars,
-                          AppTheme.secondaryColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildStatCard(
-                          'Certificates',
-                          '${user.completedCourses.length}',
-                          Icons.workspace_premium,
-                          AppTheme.warningColor,
+                          Colors.amber,
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: _buildStatCard(
-                          'Learning Streak',
-                          '${user.streak} days',
+                          'Streak',
+                          '${user.streak}',
                           Icons.local_fire_department,
                           Colors.deepOrange,
                         ),
@@ -141,45 +138,37 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 32),
 
+                  // Badges Section
+                  Text(
+                    'Earned Badges',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const BadgesGrid(),
+                  const SizedBox(height: 32),
+
                   // Menu Items
                   Text(
                     'Account',
-                    style: Theme.of(context).textTheme.headlineSmall,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 16),
 
-                  _buildMenuItem(
-                    context,
-                    'My Certificates',
-                    Icons.workspace_premium_outlined,
-                    () {},
-                  ),
-                  _buildMenuItem(
-                    context,
-                    'Student Benefits',
-                    Icons.card_giftcard_outlined,
-                    () {},
-                  ),
-                  _buildMenuItem(
-                    context,
-                    'Edit Profile',
-                    Icons.edit_outlined,
-                    () {},
-                  ),
-                  _buildMenuItem(
-                    context,
-                    'Settings',
-                    Icons.settings_outlined,
-                    () {},
-                  ),
-                  _buildMenuItem(
-                    context,
-                    'Help & Support',
-                    Icons.help_outline,
-                    () {},
-                  ),
-                  const SizedBox(height: 16),
-
+                  _buildMenuItem(context, 'My Certificates', Icons.workspace_premium_outlined, () {}),
+                  _buildMenuItem(context, 'Edit Profile', Icons.edit_outlined, () {}),
+                  _buildMenuItem(context, 'Settings', Icons.settings_outlined, () {}),
+                  _buildMenuItem(context, 'Help & Support', Icons.help_outline, () {}),
+                  
+                  const SizedBox(height: 24),
+                  
                   // Logout Button
                   SizedBox(
                     width: double.infinity,
@@ -187,15 +176,19 @@ class ProfileScreen extends StatelessWidget {
                       onPressed: () async {
                         await authProvider.signOut();
                         if (context.mounted) {
-                          Navigator.of(context).pushReplacementNamed('/login');
+                           // Navigate to login
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.errorColor,
-                        foregroundColor: Colors.white,
+                        backgroundColor: const Color(0xFF21262D),
+                        foregroundColor: Colors.red[400],
                         padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(color: Colors.red.withValues(alpha: 0.3)),
+                        ),
                       ),
-                      child: const Text('Logout'),
+                      child: const Text('Log Out'),
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -210,59 +203,48 @@ class ProfileScreen extends StatelessWidget {
 
   Widget _buildStatCard(String label, String value, IconData icon, Color color) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: const Color(0xFF161B22),
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         children: [
-          Icon(icon, color: color, size: 32),
+          Icon(icon, color: color, size: 24),
           const SizedBox(height: 8),
           Text(
             value,
-            style: TextStyle(
-              fontSize: 24,
+            style: const TextStyle(
+              fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: color,
+              color: Colors.white,
             ),
           ),
           Text(
             label,
             style: TextStyle(
               fontSize: 12,
-              color: AppTheme.textSecondary,
+              color: Colors.grey[400],
             ),
-            textAlign: TextAlign.center,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildMenuItem(
-    BuildContext context,
-    String title,
-    IconData icon,
-    VoidCallback onTap,
-  ) {
+  Widget _buildMenuItem(BuildContext context, String title, IconData icon, VoidCallback onTap) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFF161B22),
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 5,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: ListTile(
-        leading: Icon(icon, color: AppTheme.primaryColor),
-        title: Text(title),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+        leading: Icon(icon, color: Colors.blue[400]),
+        title: Text(title, style: const TextStyle(color: Colors.white)),
+        trailing: Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey[600]),
         onTap: onTap,
       ),
     );
