@@ -32,8 +32,6 @@ Got dependencies!
 Try `flutter pub outdated` for more information.
 Analyzing Skill Spring Application...                           
 
-  error - The argument type 'CardTheme' can't be assigned to the parameter type 'CardThemeData?'.  - lib\config\theme.dart:129:16 - argument_type_not_assignable
-  error - The argument type 'CardTheme' can't be assigned to the parameter type 'CardThemeData?'.  - lib\config\theme.dart:230:16 - argument_type_not_assignable
    info - Don't invoke 'print' in production code - lib\main.dart:23:5 - avoid_print
    info - The parameter name 'sum' matches a visible type name - lib\models\course_model.dart:210:29 - avoid_types_as_parameter_names
    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\academics\academics_screen.dart:105:33 - deprecated_member_use
@@ -62,10 +60,6 @@ warning - Unused import: '../../widgets/course_card.dart' - lib\screens\home\hom
    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\leaderboard\leaderboard_screen.dart:222:26 - deprecated_member_use
    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\leaderboard\leaderboard_screen.dart:261:37 - deprecated_member_use
    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\leaderboard\leaderboard_screen.dart:274:48 - deprecated_member_use
-  error - The argument type 'String?' can't be assigned to the parameter type 'String'.  - lib\screens\leaderboard\leaderboard_screen.dart:292:67 - argument_type_not_assignable
-  error - The argument type 'String?' can't be assigned to the parameter type 'String'.  - lib\screens\leaderboard\leaderboard_screen.dart:294:39 - argument_type_not_assignable
-  error - The argument type 'String?' can't be assigned to the parameter type 'String'.  - lib\screens\leaderboard\leaderboard_screen.dart:309:23 - argument_type_not_assignable
-  error - The argument type 'String?' can't be assigned to the parameter type 'String'.  - lib\screens\leaderboard\leaderboard_screen.dart:316:23 - argument_type_not_assignable
    info - Use 'const' with the constructor to improve performance - lib\screens\leaderboard\leaderboard_screen.dart:317:30 - prefer_const_constructors
    info - Use 'const' with the constructor to improve performance - lib\screens\leaderboard\leaderboard_screen.dart:338:19 - prefer_const_constructors
    info - Use 'const' with the constructor to improve performance - lib\screens\leaderboard\leaderboard_screen.dart:340:28 - prefer_const_constructors

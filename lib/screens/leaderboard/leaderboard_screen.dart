@@ -289,9 +289,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
               // Avatar
               CircleAvatar(
                 radius: 24,
-                backgroundColor: Color(Helpers.getColorFromString(user['name'])),
+                backgroundColor: Color(Helpers.getColorFromString(user['name'] ?? '')),
                 child: Text(
-                  Helpers.getInitials(user['name']),
+                  Helpers.getInitials(user['name'] ?? ''),
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -306,14 +306,14 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      user['name'],
+                      user['name'] ?? '',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     Text(
-                      user['institution'],
+                      user['institution'] ?? '',
                       style: TextStyle(
                         fontSize: 12,
                         color: AppTheme.textSecondary,
