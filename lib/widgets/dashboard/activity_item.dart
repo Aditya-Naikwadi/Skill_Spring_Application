@@ -22,49 +22,51 @@ class ActivityItem extends StatelessWidget {
     return HoverScaleButton(
       onPressed: () {}, // TODO: specific action
       isOutlined: false,
-      color: const Color(0xFF161B22),
-      // scaleAmount not available in HoverScaleButton
+      color: const Color(0xFF161B22), // Dark card background
+      width: double.infinity,
+      height: null, // Let it be flexible
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           children: [
+            // Icon Container
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
+                color: color.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: color, size: 20),
+              child: Icon(icon, color: color, size: 24),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 16),
+            
+            // Content
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     title,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.bold,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 4),
                   Text(
-                    subtitle,
+                    '$time • $subtitle',
                     style: TextStyle(
-                      color: Colors.grey[400],
+                      color: Colors.grey[500],
                       fontSize: 12,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
-              ),
-            ),
-            Text(
-              time,
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 12,
               ),
             ),
           ],

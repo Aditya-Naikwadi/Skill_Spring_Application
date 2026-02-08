@@ -4,8 +4,8 @@ class HoverScaleButton extends StatefulWidget {
   final VoidCallback? onPressed;
   final Widget child;
   final Color? color;
-  final double width;
-  final double height;
+  final double? width;
+  final double? height;
   final bool isOutlined;
 
   const HoverScaleButton({
@@ -13,8 +13,8 @@ class HoverScaleButton extends StatefulWidget {
     required this.onPressed,
     required this.child,
     this.color,
-    this.width = double.infinity,
-    this.height = 56,
+    this.width, // Nullable
+    this.height, // Nullable
     this.isOutlined = false,
   });
 
@@ -72,6 +72,7 @@ class _HoverScaleButtonState extends State<HoverScaleButton>
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
+                    padding: EdgeInsets.zero, // Remove default padding
                     elevation: _isHovered ? 4 : 0,
                   ),
                   child: widget.child,
@@ -83,6 +84,7 @@ class _HoverScaleButtonState extends State<HoverScaleButton>
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
+                    padding: EdgeInsets.zero, // Remove default padding
                     elevation: _isHovered ? 12 : 8,
                     shadowColor: (widget.color ?? Colors.blue).withValues(alpha: 0.5),
                   ),

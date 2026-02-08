@@ -1,6 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart';
@@ -8,7 +6,6 @@ import '../models/user_model.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final String _apiKey = 'AIzaSyD_3T114jrJIeQDPJqrB6-u2ScxBRvxP3U'; // Provided API Key
 
   // Get current user (Note: May be null if using REST auth without custom token sign-in)
   User? get currentUser => _auth.currentUser;
@@ -16,59 +13,47 @@ class AuthService {
   // Auth state changes stream
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
-  // Sign in with email and password via REST API
+  // Sign in with email and password
   Future<UserModel?> signInWithEmail(String email, String password) async {
-    // Validate inputs
-    if (email.isEmpty || !email.contains('@')) throw 'Invalid email address';
-    if (password.length < 6) throw 'Password must be at least 6 characters';
-
-    final url = Uri.parse('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$_apiKey');
-    
     try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email': email,
-          'password': password,
-          'returnSecureToken': true,
-        }),
+      final UserCredential result = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
       );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final String uid = data['localId'];
-        final String? displayName = data['displayName'];
-        
+      
+      final User? user = result.user;
+      if (user != null) {
         // Fetch user data from Firestore
-        // Note: Firestore rules might need to allow access if auth.uid is not present on request
-        final userParams = await getUserData(uid);
+        final userParams = await getUserData(user.uid);
         
         if (userParams != null) {
+          // Update last login time
+          await _firestore.collection('users').doc(user.uid).update({
+            'lastLoginAt': FieldValue.serverTimestamp(),
+          });
           return userParams;
         }
 
-        // Fallback if Firestore fetch failed -> Return basic model to allow login
+        // Fallback: Return basic model if Firestore data doesn't exist yet
         return UserModel(
-          uid: uid,
-          email: email,
-          displayName: displayName ?? 'Student', // Use auth name or better default
-          institution: 'Skill Spring University', // Better default
+          uid: user.uid,
+          email: user.email ?? email,
+          displayName: user.displayName ?? 'Student',
+          institution: 'Skill Spring University',
           role: UserRole.student,
           createdAt: DateTime.now(),
           lastLoginAt: DateTime.now(),
         );
-
-      } else {
-        final errorData = jsonDecode(response.body);
-        throw errorData['error']['message'] ?? 'Login failed';
       }
+      return null;
+    } on FirebaseAuthException catch (e) {
+      throw _handleAuthException(e);
     } catch (e) {
-      throw _handleRestError(e);
+      throw 'Login failed: ${e.toString()}';
     }
   }
 
-  // Register new user via REST API
+  // Register new user
   Future<UserModel?> registerUser({
     required String email,
     required String password,
@@ -77,30 +62,17 @@ class AuthService {
     String? phoneNumber,
     UserRole role = UserRole.student,
   }) async {
-    // Validate inputs
-    if (email.isEmpty || !email.contains('@')) throw 'Invalid email address';
-    if (password.length < 6) throw 'Password must be at least 6 characters';
-
-    final url = Uri.parse('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=$_apiKey');
-
     try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email': email,
-          'password': password,
-          'returnSecureToken': true,
-        }),
+      final UserCredential result = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
       );
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final String uid = data['localId'];
-
+      final User? user = result.user;
+      if (user != null) {
         // Create user document in Firestore
         final UserModel newUser = UserModel(
-          uid: uid,
+          uid: user.uid,
           email: email,
           phoneNumber: phoneNumber,
           displayName: displayName,
@@ -110,25 +82,21 @@ class AuthService {
           lastLoginAt: DateTime.now(),
         );
 
-        // Attempting to write to Firestore
-        try {
-          await _firestore.collection('users').doc(uid).set(newUser.toMap());
-        } catch (e) {
-          debugPrint('Firestore write failed (offline?): $e');
-          // Start a background retry or just rely on local model for now
-        }
+        // Upload to Firestore
+        await _firestore.collection('users').doc(user.uid).set(newUser.toMap());
+        
+        // Update display name in Auth
+        await user.updateDisplayName(displayName);
 
         return newUser;
-      } else {
-         final errorData = jsonDecode(response.body);
-        throw errorData['error']['message'] ?? 'Registration failed';
       }
+      return null;
+    } on FirebaseAuthException catch (e) {
+      throw _handleAuthException(e);
     } catch (e) {
-       throw _handleRestError(e);
+      throw 'Registration failed: ${e.toString()}';
     }
   }
-
-  // ... (Other methods remain unchanged but may need similar updates if used)
 
   // Sign in with phone number (requires verification)
   Future<void> signInWithPhone(
@@ -243,17 +211,6 @@ class AuthService {
     } catch (e) {
       throw 'Failed to delete account. Please try again.';
     }
-  }
-
-   String _handleRestError(dynamic e) {
-    final msg = e.toString().toUpperCase();
-    if (msg.contains('EMAIL_EXISTS')) return 'Email already in use.';
-    if (msg.contains('INVALID_EMAIL')) return 'Invalid email address.';
-    if (msg.contains('WEAK_PASSWORD')) return 'Password is too weak.';
-    if (msg.contains('EMAIL_NOT_FOUND')) return 'Email not found.';
-    if (msg.contains('INVALID_PASSWORD')) return 'Incorrect password.';
-    if (msg.contains('USER_DISABLED')) return 'User account disabled.';
-    return 'Authentication failed: $msg';
   }
 
   // Handle Firebase Auth exceptions (kept for legacy/SDK calls)

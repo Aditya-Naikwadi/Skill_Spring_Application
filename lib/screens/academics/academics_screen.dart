@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:animate_do/animate_do.dart';
 import '../../config/theme.dart';
 import '../../utils/constants.dart';
 import '../../widgets/academics/folder_card.dart';
+import '../../widgets/common/entry_animation.dart';
 import 'subject_details_screen.dart';
 
 class AcademicsScreen extends StatefulWidget {
@@ -35,41 +35,73 @@ class _AcademicsScreenState extends State<AcademicsScreen> with SingleTickerProv
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        title: const Text(
-          'Academics',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: TabBar(
-              controller: _tabController,
-              indicator: BoxDecoration(
-                color: AppTheme.primaryColor,
-                borderRadius: BorderRadius.circular(12),
+      backgroundColor: const Color(0xFF0D1117), // Dark Background
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [
+            // 1. Branding Header
+            SliverAppBar(
+              expandedHeight: 100.0,
+              floating: false,
+              pinned: true,
+              backgroundColor: const Color(0xFF0D1117).withValues(alpha: 0.9), // High opacity for readability
+              flexibleSpace: FlexibleSpaceBar(
+                titlePadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                centerTitle: false,
+                title: const Text(
+                  'Academics',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20, // Adjusted for Collapsed state
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                background: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        AppTheme.primaryColor.withValues(alpha: 0.15),
+                        const Color(0xFF0D1117),
+                      ],
+                    ),
+                  ),
+                ),
               ),
-              labelColor: Colors.white,
-              unselectedLabelColor: Colors.grey[600],
-              tabs: _sections.map((section) => Tab(text: section)).toList(),
-              dividerColor: Colors.transparent, // Remove divider
+              actions: [
+                _buildHeaderIcon(Icons.search, () {}),
+                const SizedBox(width: 12),
+                _buildHeaderIcon(Icons.filter_list, () {}),
+                const SizedBox(width: 24),
+              ],
             ),
-          ),
+
+            // 2. Persistent Tab Bar
+            SliverPersistentHeader(
+              delegate: _SliverAppBarDelegate(
+                TabBar(
+                  controller: _tabController,
+                  labelColor: AppTheme.primaryColor,
+                  unselectedLabelColor: Colors.grey[500],
+                  indicatorColor: AppTheme.primaryColor,
+                  indicatorWeight: 3,
+                  labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+                  tabs: _sections.map((section) => Tab(text: section)).toList(),
+                  dividerColor: Colors.white10,
+                ),
+              ),
+              pinned: true,
+            ),
+          ];
+        },
+        body: TabBarView(
+          controller: _tabController,
+          children: _sections.map((section) {
+            return _buildSubjectFolders(section);
+          }).toList(),
         ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: _sections.map((section) {
-          return _buildSubjectFolders(section);
-        }).toList(),
       ),
     );
   }
@@ -124,38 +156,94 @@ class _AcademicsScreenState extends State<AcademicsScreen> with SingleTickerProv
       };
     }).toList();
 
-    return GridView.builder(
-      padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 250, // Responsive width
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: 0.85,
-      ),
-      itemCount: categories.length,
-      itemBuilder: (context, index) {
-        final category = categories[index];
-        return FadeInUp(
-          delay: Duration(milliseconds: index * 50), // Staggered animation
-          child: FolderCard(
-            title: category['name'],
-            subtitle: category['description'],
-            icon: category['icon'],
-            color: category['color'],
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SubjectDetailsScreen(
-                    category: category['name'],
-                    type: type,
-                  ),
-                ),
-              );
-            },
+    return Scrollbar(
+      thumbVisibility: true, // Always show scrollbar for better UX
+      child: CustomScrollView(
+        key: PageStorageKey<String>(type), // Persist scroll position
+        primary: false, // Resolve PrimaryScrollController conflict
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.all(24),
+            sliver: SliverGrid(
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 280, // Responsive Width
+                crossAxisSpacing: 24,
+                mainAxisSpacing: 24,
+                childAspectRatio: 0.9, // Almost square but slightly taller
+              ),
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final category = categories[index];
+                  return EntryAnimatedWidget(
+                    delay: Duration(milliseconds: 50 + (index * 50).clamp(0, 500)), // Staggered
+                    child: FolderCard(
+                      title: category['name'],
+                      subtitle: category['description'],
+                      icon: category['icon'],
+                      color: category['color'],
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SubjectDetailsScreen(
+                              category: category['name'],
+                              type: type,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+                childCount: categories.length,
+              ),
+            ),
           ),
-        );
-      },
+          // Bottom Padding
+          const SliverPadding(padding: EdgeInsets.only(bottom: 40)),
+        ],
+      ),
     );
+  }
+  
+  Widget _buildHeaderIcon(IconData icon, VoidCallback onTap) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF161B22),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+      ),
+      child: IconButton(
+        onPressed: onTap,
+        icon: Icon(icon, color: Colors.white, size: 20),
+        constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+        padding: EdgeInsets.zero,
+      ),
+    );
+  }
+}
+
+// Delegate for Sticky Tab Bar
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  final TabBar _tabBar;
+
+  _SliverAppBarDelegate(this._tabBar);
+
+  @override
+  double get minExtent => _tabBar.preferredSize.height;
+  @override
+  double get maxExtent => _tabBar.preferredSize.height;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: const Color(0xFF0D1117), // Match background to cover scrolling content
+      child: _tabBar,
+    );
+  }
+
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
+    return false;
   }
 }

@@ -24,54 +24,64 @@ class SummaryCard extends StatelessWidget {
     return HoverScaleButton(
       onPressed: onTap,
       isOutlined: false,
-      color: const Color(0xFF161B22),
-      width: double.infinity,
-      height: double.infinity,
+      color: const Color(0xFF161B22), // Dark card background
+      width: null,
+      height: null,
       child: Padding(
-        padding: const EdgeInsets.all(12), // Reduced padding
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // Icon
             Container(
-              padding: const EdgeInsets.all(8), // Reduced padding
+              padding: const EdgeInsets.all(10), // Reduced padding
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
+                color: color.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: color, size: 20), // Reduced icon size
+              child: Icon(icon, color: color, size: 20), // Reduced size
             ),
-            const Spacer(),
+            const SizedBox(height: 12),
+            // Value
             FittedBox(
-              alignment: Alignment.centerLeft,
               fit: BoxFit.scaleDown,
               child: Text(
                 value,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 22, // Slightly smaller font
+                  fontSize: 24, // Slightly reduced base size
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-            const SizedBox(height: 2),
-            Text(
-              title,
-              style: TextStyle(
-                color: Colors.grey[400],
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
+            const SizedBox(height: 4),
+            // Subtitle
+            Flexible(
+              child: Text(
+                subtitle,
+                style: TextStyle(
+                  color: Colors.grey[400],
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
             ),
-            Text(
-              subtitle,
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 11,
+            const SizedBox(height: 2),
+            // Title
+             Flexible(
+               child: Text(
+                title,
+                 style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 10,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
