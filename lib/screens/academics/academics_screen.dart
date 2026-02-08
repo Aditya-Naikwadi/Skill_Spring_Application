@@ -99,14 +99,50 @@ class _AcademicsScreenState extends State<AcademicsScreen> with SingleTickerProv
         body: TabBarView(
           controller: _tabController,
           children: _sections.map((section) {
-            return _buildSubjectFolders(section);
+            return SubjectTab(type: section);
           }).toList(),
         ),
       ),
     );
   }
 
-  Widget _buildSubjectFolders(String type) {
+  Widget _buildHeaderIcon(IconData icon, VoidCallback onTap) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF161B22),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+      ),
+      child: IconButton(
+        onPressed: onTap,
+        icon: Icon(icon, color: Colors.white, size: 20),
+        constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+        padding: EdgeInsets.zero,
+      ),
+    );
+  }
+}
+
+class SubjectTab extends StatefulWidget {
+  final String type;
+
+  const SubjectTab({super.key, required this.type});
+
+  @override
+  State<SubjectTab> createState() => _SubjectTabState();
+}
+
+class _SubjectTabState extends State<SubjectTab> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     // Map categories to icons and colors for visual distinction
     final List<Map<String, dynamic>> categories = AppConstants.courseCategories.map((category) {
       IconData icon;
@@ -157,25 +193,27 @@ class _AcademicsScreenState extends State<AcademicsScreen> with SingleTickerProv
     }).toList();
 
     return Scrollbar(
-      thumbVisibility: true, // Always show scrollbar for better UX
+      controller: _scrollController,
+      thumbVisibility: true,
       child: CustomScrollView(
-        key: PageStorageKey<String>(type), // Persist scroll position
-        primary: false, // Resolve PrimaryScrollController conflict
+        controller: _scrollController,
+        key: PageStorageKey<String>(widget.type),
+        primary: false,
         slivers: [
           SliverPadding(
             padding: const EdgeInsets.all(24),
             sliver: SliverGrid(
               gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 280, // Responsive Width
+                maxCrossAxisExtent: 280,
                 crossAxisSpacing: 24,
                 mainAxisSpacing: 24,
-                childAspectRatio: 0.9, // Almost square but slightly taller
+                childAspectRatio: 0.9,
               ),
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   final category = categories[index];
                   return EntryAnimatedWidget(
-                    delay: Duration(milliseconds: 50 + (index * 50).clamp(0, 500)), // Staggered
+                    delay: Duration(milliseconds: 50 + (index * 50).clamp(0, 500)),
                     child: FolderCard(
                       title: category['name'],
                       subtitle: category['description'],
@@ -187,7 +225,7 @@ class _AcademicsScreenState extends State<AcademicsScreen> with SingleTickerProv
                           MaterialPageRoute(
                             builder: (context) => SubjectDetailsScreen(
                               category: category['name'],
-                              type: type,
+                              type: widget.type, // Pass specific tab type
                             ),
                           ),
                         );
@@ -199,25 +237,8 @@ class _AcademicsScreenState extends State<AcademicsScreen> with SingleTickerProv
               ),
             ),
           ),
-          // Bottom Padding
           const SliverPadding(padding: EdgeInsets.only(bottom: 40)),
         ],
-      ),
-    );
-  }
-  
-  Widget _buildHeaderIcon(IconData icon, VoidCallback onTap) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF161B22),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-      ),
-      child: IconButton(
-        onPressed: onTap,
-        icon: Icon(icon, color: Colors.white, size: 20),
-        constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
-        padding: EdgeInsets.zero,
       ),
     );
   }
@@ -225,20 +246,20 @@ class _AcademicsScreenState extends State<AcademicsScreen> with SingleTickerProv
 
 // Delegate for Sticky Tab Bar
 class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
-  final TabBar _tabBar;
+  final TabBar tabBar; // Renamed to simple tabBar
 
-  _SliverAppBarDelegate(this._tabBar);
+  _SliverAppBarDelegate(this.tabBar);
 
   @override
-  double get minExtent => _tabBar.preferredSize.height;
+  double get minExtent => tabBar.preferredSize.height;
   @override
-  double get maxExtent => _tabBar.preferredSize.height;
+  double get maxExtent => tabBar.preferredSize.height;
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
-      color: const Color(0xFF0D1117), // Match background to cover scrolling content
-      child: _tabBar,
+      color: const Color(0xFF0D1117), // Match background
+      child: tabBar,
     );
   }
 

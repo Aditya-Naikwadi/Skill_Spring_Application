@@ -1,0 +1,6 @@
+
+warning - Unused import: '../../models/user_model.dart' - lib\screens\home\home_screen.dart:6:8 - unused_import
+  error - Expected to find ')' - lib\screens\home\home_screen.dart:136:6 - expected_token
+warning - The declaration '_DashboardHeaderDelegate' isn't referenced - lib\screens\home\home_screen.dart:140:7 - unused_element
+warning - Unused import: '../../config/theme.dart' - lib\widgets\academics\folder_card.dart:2:8 - unused_import
+

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../config/theme.dart';
+
 import '../common/hover_scale_button.dart';
 
 class FolderCard extends StatelessWidget {
