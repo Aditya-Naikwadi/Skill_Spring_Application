@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart';
+import '../core/exceptions/auth_failure.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -49,7 +50,7 @@ class AuthService {
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
     } catch (e) {
-      throw 'Login failed: ${e.toString()}';
+      throw AuthFailure('Login failed: ${e.toString()}', 'unknown');
     }
   }
 
@@ -94,7 +95,7 @@ class AuthService {
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
     } catch (e) {
-      throw 'Registration failed: ${e.toString()}';
+      throw AuthFailure('Registration failed: ${e.toString()}', 'unknown');
     }
   }
 
@@ -214,30 +215,30 @@ class AuthService {
   }
 
   // Handle Firebase Auth exceptions (kept for legacy/SDK calls)
-  String _handleAuthException(FirebaseAuthException e) {
+  AuthFailure _handleAuthException(FirebaseAuthException e) {
     switch (e.code) {
       case 'user-not-found':
-        return 'No user found with this email.';
+        return AuthFailure('No user found with this email.', e.code);
       case 'wrong-password':
-        return 'Incorrect password. Please try again.';
+        return AuthFailure('Incorrect password. Please try again.', e.code);
       case 'email-already-in-use':
-        return 'An account already exists with this email.';
+        return AuthFailure('An account already exists with this email.', e.code);
       case 'invalid-email':
-        return 'Please enter a valid email address.';
+        return AuthFailure('Please enter a valid email address.', e.code);
       case 'weak-password':
-        return 'Password is too weak. Please use a stronger password.';
+        return AuthFailure('Password is too weak. Please use a stronger password.', e.code);
       case 'user-disabled':
-        return 'This account has been disabled.';
+        return AuthFailure('This account has been disabled.', e.code);
       case 'too-many-requests':
-        return 'Too many attempts. Please try again later.';
+        return AuthFailure('Too many attempts. Please try again later.', e.code);
       case 'operation-not-allowed':
-        return 'This sign-in method is not enabled.';
+        return AuthFailure('This sign-in method is not enabled.', e.code);
       case 'invalid-verification-code':
-        return 'Invalid verification code. Please try again.';
+        return AuthFailure('Invalid verification code. Please try again.', e.code);
       case 'invalid-verification-id':
-        return 'Invalid verification ID. Please try again.';
+        return AuthFailure('Invalid verification ID. Please try again.', e.code);
       default:
-        return 'An error occurred. Please try again.';
+        return AuthFailure('An error occurred. Please try again.', e.code);
     }
   }
 }

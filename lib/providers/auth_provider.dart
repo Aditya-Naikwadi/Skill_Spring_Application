@@ -2,18 +2,20 @@ import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
+import '../core/exceptions/auth_failure.dart';
 
 class AuthProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
   
   UserModel? _currentUser;
   bool _isLoading = false;
-  bool _isAuthCheckComplete = false; // Added flag
+  bool _isAuthCheckComplete = false;
+  bool _isRegistrationInProgress = false; // Flag to prevent race condition
   String? _error;
 
   UserModel? get currentUser => _currentUser;
   bool get isLoading => _isLoading;
-  bool get isAuthCheckComplete => _isAuthCheckComplete; // Getter
+  bool get isAuthCheckComplete => _isAuthCheckComplete;
   String? get error => _error;
   bool get isAuthenticated => _currentUser != null;
 
@@ -35,6 +37,8 @@ class AuthProvider with ChangeNotifier {
     });
 
     _authService.authStateChanges.listen((User? user) async {
+      if (_isRegistrationInProgress) return; // Skip listener during explicit registration
+
       if (initialCheckCompleted) {
         // Just update user if check already completed via timeout or previous event
         if (user != null) {
@@ -90,14 +94,20 @@ class AuthProvider with ChangeNotifier {
       _lockoutUntil = null;
       notifyListeners();
       return _currentUser != null;
-    } catch (e) {
+    } on AuthFailure catch (e) {
+      // Logic for lockout handling remains similar or can use e.code
       _loginAttempts++;
       if (_loginAttempts >= 5) {
         _lockoutUntil = DateTime.now().add(const Duration(minutes: 5));
         _error = 'Too many failed attempts. Locked for 5 minutes.';
       } else {
-        _error = e.toString();
+        _error = e.message;
       }
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    } catch (e) {
+      _error = e.toString();
       _isLoading = false;
       notifyListeners();
       return false;
@@ -113,6 +123,7 @@ class AuthProvider with ChangeNotifier {
     String? phoneNumber,
     UserRole role = UserRole.student,
   }) async {
+    _isRegistrationInProgress = true; // Start critical section
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -134,6 +145,8 @@ class AuthProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
       return false;
+    } finally {
+      _isRegistrationInProgress = false; // End critical section
     }
   }
 

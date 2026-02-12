@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../models/user_model.dart';
 import '../../screens/onboarding/onboarding_screen.dart';
+import 'access_denied_view.dart';
 
 class AuthGuard extends StatelessWidget {
   final Widget child;
@@ -38,28 +39,7 @@ class AuthGuard extends StatelessWidget {
           final userRole = auth.currentUser?.role;
           if (userRole == null || !allowedRoles!.contains(userRole)) {
             // User doesn't have required role
-            return Scaffold(
-              body: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.lock_outline, size: 64, color: Colors.red),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Access Denied',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text('You do not have permission to view this page.'),
-                    const SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: () => Navigator.of(context).pushReplacementNamed('/home'),
-                      child: const Text('Go Home'),
-                    ),
-                  ],
-                ),
-              ),
-            );
+            return const AccessDeniedView();
           }
         }
 

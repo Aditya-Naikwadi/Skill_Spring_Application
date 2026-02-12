@@ -2,6 +2,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../widgets/common/hover_scale_button.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -435,73 +436,7 @@ class OnboardingContent {
   });
 }
 
-// Simple internal widget for hover scaling effect
-class HoverScaleButton extends StatefulWidget {
-  final VoidCallback onPressed;
-  final Widget child;
-  final Color color;
 
-  const HoverScaleButton({
-    super.key,
-    required this.onPressed,
-    required this.child,
-    required this.color,
-  });
-
-  @override
-  State<HoverScaleButton> createState() => _HoverScaleButtonState();
-}
-
-class _HoverScaleButtonState extends State<HoverScaleButton>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
-  bool _isHovered = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 200));
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
-        CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) {
-        setState(() => _isHovered = true);
-        _controller.forward();
-      },
-      onExit: (_) {
-        setState(() => _isHovered = false);
-        _controller.reverse();
-      },
-      child: ScaleTransition(
-        scale: _scaleAnimation,
-        child: ElevatedButton(
-          onPressed: widget.onPressed,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: widget.color,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            elevation: _isHovered ? 12 : 8,
-            shadowColor: widget.color.withValues(alpha: 0.5),
-          ),
-          child: widget.child,
-        ),
-      ),
-    );
-  }
-}
 
 class FloatingItem extends StatefulWidget {
   final Widget child;

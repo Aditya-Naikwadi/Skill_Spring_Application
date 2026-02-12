@@ -59,37 +59,55 @@ class _HoverScaleButtonState extends State<HoverScaleButton>
           _controller.reverse();
         }
       },
-      child: ScaleTransition(
-        scale: _scaleAnimation,
-        child: SizedBox(
-          width: widget.width,
-          height: widget.height,
-          child: widget.isOutlined
-              ? OutlinedButton(
-                  onPressed: widget.onPressed,
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: widget.color ?? Colors.blue),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+      child: GestureDetector(
+        onTapDown: (_) {
+          if (widget.onPressed != null) {
+             _controller.forward();
+          }
+        },
+        onTapUp: (_) {
+           if (widget.onPressed != null) {
+             _controller.reverse();
+             widget.onPressed?.call();
+           }
+        },
+        onTapCancel: () {
+           if (widget.onPressed != null) {
+             _controller.reverse();
+           }
+        },
+        child: ScaleTransition(
+          scale: _scaleAnimation,
+          child: SizedBox(
+            width: widget.width,
+            height: widget.height,
+            child: widget.isOutlined
+                ? OutlinedButton(
+                    onPressed: widget.onPressed, // Keep for accessibility/focus, but GestureDetector handles tap
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: widget.color ?? Colors.blue),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      padding: EdgeInsets.zero, // Remove default padding
+                      elevation: _isHovered ? 4 : 0,
                     ),
-                    padding: EdgeInsets.zero, // Remove default padding
-                    elevation: _isHovered ? 4 : 0,
-                  ),
-                  child: widget.child,
-                )
-              : ElevatedButton(
-                  onPressed: widget.onPressed,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: widget.color,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                    child: widget.child,
+                  )
+                : ElevatedButton(
+                    onPressed: widget.onPressed, // Keep for accessibility
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: widget.color,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      padding: EdgeInsets.zero, // Remove default padding
+                      elevation: _isHovered ? 12 : 8,
+                      shadowColor: (widget.color ?? Colors.blue).withValues(alpha: 0.5),
                     ),
-                    padding: EdgeInsets.zero, // Remove default padding
-                    elevation: _isHovered ? 12 : 8,
-                    shadowColor: (widget.color ?? Colors.blue).withValues(alpha: 0.5),
+                    child: widget.child,
                   ),
-                  child: widget.child,
-                ),
+          ),
         ),
       ),
     );
