@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
@@ -32,14 +33,17 @@ void main() async {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
-      // Enable persistence to support offline mode
-      try {
-         FirebaseFirestore.instance.settings = const Settings(
-          persistenceEnabled: true,
-          cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
-        );
-      } catch (e) {
-        debugPrint('Firestore persistence init error: $e');
+      // Enable persistence to support offline mode (Mobile only)
+      // Disabled on Web to prevent IndexedDB timeouts
+      if (!kIsWeb) {
+        try {
+          FirebaseFirestore.instance.settings = const Settings(
+            persistenceEnabled: true,
+            cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+          );
+        } catch (e) {
+          debugPrint('Firestore persistence init error: $e');
+        }
       }
     }
   } catch (e) {

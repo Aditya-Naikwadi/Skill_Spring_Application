@@ -207,7 +207,7 @@ class _SubjectTabState extends State<SubjectTab> {
                 maxCrossAxisExtent: 280,
                 crossAxisSpacing: 24,
                 mainAxisSpacing: 24,
-                childAspectRatio: 0.9,
+                childAspectRatio: 0.75, // Adjusted to prevent bottom overflow
               ),
               delegate: SliverChildBuilderDelegate(
                 (context, index) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:animate_do/animate_do.dart';
 import '../../models/project_model.dart';
 import '../../models/certificate_model.dart';
 import '../../models/user_model.dart';
@@ -18,66 +19,85 @@ class StatsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Overview',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0.5,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: FadeInLeft(
+            child: const Text(
+              'Overview',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
+              ),
             ),
           ),
-          const SizedBox(height: 16),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final width = constraints.maxWidth;
-              // Responsive grid: 1 column on very small, 3 on larger
-              int crossAxisCount = width < 600 ? 1 : 3;
-              double aspectRatio = width < 600 ? 1.3 : 1.2;
-
-              return GridView.count(
-                crossAxisCount: crossAxisCount,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                childAspectRatio: aspectRatio,
-                children: [
-                  SummaryCard(
-                    title: 'In Progress',
-                    value: '${user?.enrolledCourses.length ?? 0}',
-                    subtitle: 'Enrolled Courses',
-                    icon: Icons.auto_stories,
-                    color: Colors.blueAccent,
-                    onTap: () {},
-                  ),
-                  SummaryCard(
-                    title: 'Available',
-                    value: '${projects?.length ?? 0}',
-                    subtitle: 'Active Projects',
-                    icon: Icons.code,
-                    color: Colors.greenAccent,
-                    onTap: () {},
-                  ),
-                  SummaryCard(
-                    title: 'Achievements',
-                    value: '${certificates?.length ?? 0}',
-                    subtitle: 'Certificates Earned',
-                    icon: Icons.verified,
-                    color: Colors.amberAccent,
-                    onTap: () {},
-                  ),
-                ],
-              );
-            },
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          height: 140, // Fixed height for the scrollable row
+          child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            children: [
+              FadeInUp(
+                duration: const Duration(milliseconds: 500),
+                child: SummaryCard(
+                  title: 'In Progress',
+                  value: '${user?.enrolledCourses.length ?? 0}',
+                  subtitle: 'Enrolled Courses',
+                  icon: Icons.auto_stories,
+                  color: Colors.blueAccent,
+                  onTap: () {},
+                ),
+              ),
+              const SizedBox(width: 16),
+              FadeInUp(
+                delay: const Duration(milliseconds: 100),
+                duration: const Duration(milliseconds: 500),
+                child: SummaryCard(
+                  title: 'Available',
+                  value: '${projects?.length ?? 0}',
+                  subtitle: 'Active Projects',
+                  icon: Icons.code,
+                  color: Colors.greenAccent,
+                  onTap: () {},
+                ),
+              ),
+              const SizedBox(width: 16),
+              FadeInUp(
+                delay: const Duration(milliseconds: 200),
+                duration: const Duration(milliseconds: 500),
+                child: SummaryCard(
+                  title: 'Achievements',
+                  value: '${certificates?.length ?? 0}',
+                  subtitle: 'Certificates Earned',
+                  icon: Icons.verified,
+                  color: Colors.amberAccent,
+                  onTap: () {},
+                ),
+              ),
+              const SizedBox(width: 16),
+              FadeInUp(
+                 delay: const Duration(milliseconds: 300),
+                 duration: const Duration(milliseconds: 500),
+                 child: SummaryCard(
+                   title: 'Total XP',
+                   value: '${user?.points ?? 0}',
+                   subtitle: 'Experience Points',
+                   icon: Icons.bolt,
+                   color: Colors.purpleAccent,
+                   onTap: () {},
+                 ),
+               ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

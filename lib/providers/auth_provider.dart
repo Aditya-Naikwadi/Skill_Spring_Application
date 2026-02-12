@@ -20,6 +20,7 @@ class AuthProvider with ChangeNotifier {
   bool get isAuthenticated => _currentUser != null;
 
   AuthProvider() {
+    _authService.initialize();
     _initAuth();
   }
 
