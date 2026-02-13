@@ -106,7 +106,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           },
                           itemCount: _contents.length,
                           itemBuilder: (context, index) {
-                            return _buildPage(_contents[index], constraints);
+                            return _buildPage(_contents[index], constraints, index);
                           },
                         ),
                       ),
@@ -237,7 +237,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  Widget _buildPage(OnboardingContent content, BoxConstraints constraints) {
+  Widget _buildPage(OnboardingContent content, BoxConstraints constraints, int index) {
     final isWebOrLarge = constraints.maxWidth > 600;
     final double imageSize = isWebOrLarge ? 380.0 : 280.0;
     final double iconSize = isWebOrLarge ? 120.0 : 90.0;

@@ -84,12 +84,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         Positioned(
                           bottom: -100,
                           right: -100,
-                           child: Container(
+                          child: Container(
                             width: 600,
                             height: 600,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: const Color(0xFF2196F3).withValues(alpha: 0.1),
+                            ),
                           ),
                         ),
                         
