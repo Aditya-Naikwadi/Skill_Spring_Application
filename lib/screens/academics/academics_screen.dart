@@ -150,34 +150,34 @@ class _SubjectTabState extends State<SubjectTab> {
 
       // Assign distinct icons and colors based on category name
       if (category.contains('Programming')) {
-        icon = Icons.code;
+        icon = widget.type == 'Courses' ? Icons.terminal : (widget.type == 'Projects' ? Icons.laptop_mac : Icons.badge);
         color = Colors.blue;
       } else if (category.contains('Data Structures')) {
-        icon = Icons.account_tree;
+        icon = widget.type == 'Courses' ? Icons.account_tree : (widget.type == 'Projects' ? Icons.schema : Icons.workspace_premium);
         color = Colors.orange;
       } else if (category.contains('Architecture')) {
-        icon = Icons.memory;
+        icon = widget.type == 'Courses' ? Icons.memory : (widget.type == 'Projects' ? Icons.developer_board : Icons.verified);
         color = Colors.purple;
       } else if (category.contains('Operating Systems')) {
-        icon = Icons.settings_system_daydream;
+        icon = widget.type == 'Courses' ? Icons.settings_system_daydream : (widget.type == 'Projects' ? Icons.terminal_sharp : Icons.stars);
         color = Colors.teal;
       } else if (category.contains('Database')) {
-        icon = Icons.storage;
+        icon = widget.type == 'Courses' ? Icons.storage : (widget.type == 'Projects' ? Icons.dataset : Icons.military_tech);
         color = Colors.green;
       } else if (category.contains('Networks')) {
-        icon = Icons.router;
+        icon = widget.type == 'Courses' ? Icons.router : (widget.type == 'Projects' ? Icons.lan : Icons.public);
         color = Colors.cyan;
       } else if (category.contains('Discrete')) {
-        icon = Icons.calculate;
+        icon = widget.type == 'Courses' ? Icons.calculate : (widget.type == 'Projects' ? Icons.functions : Icons.fact_check);
         color = Colors.indigo;
       } else if (category.contains('Software')) {
-        icon = Icons.engineering;
+        icon = widget.type == 'Courses' ? Icons.engineering : (widget.type == 'Projects' ? Icons.architecture_rounded : Icons.assignment_turned_in);
         color = Colors.red;
       } else if (category.contains('Computation')) {
-        icon = Icons.functions;
+        icon = widget.type == 'Courses' ? Icons.functions : (widget.type == 'Projects' ? Icons.auto_graph : Icons.history_edu);
         color = Colors.deepPurple;
       } else if (category.contains('Object-Oriented')) {
-        icon = Icons.data_object;
+        icon = widget.type == 'Courses' ? Icons.data_object : (widget.type == 'Projects' ? Icons.category : Icons.card_membership);
         color = Colors.pink;
       } else {
         icon = Icons.folder;
@@ -192,55 +192,132 @@ class _SubjectTabState extends State<SubjectTab> {
       };
     }).toList();
 
-    return Scrollbar(
-      controller: _scrollController,
-      thumbVisibility: true,
-      child: CustomScrollView(
-        controller: _scrollController,
-        key: PageStorageKey<String>(widget.type),
-        primary: false,
-        slivers: [
-          SliverPadding(
-            padding: const EdgeInsets.all(24),
-            sliver: SliverGrid(
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 280,
-                crossAxisSpacing: 24,
-                mainAxisSpacing: 24,
-                childAspectRatio: 0.75, // Adjusted to prevent bottom overflow
-              ),
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final category = categories[index];
-                  return EntryAnimatedWidget(
-                    delay: Duration(milliseconds: 50 + (index * 50).clamp(0, 500)),
-                    child: FolderCard(
-                      title: category['name'],
-                      subtitle: category['description'],
-                      icon: category['icon'],
-                      color: category['color'],
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SubjectDetailsScreen(
-                              category: category['name'],
-                              type: widget.type, // Pass specific tab type
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Adjust grid based on screen width
+        int crossAxisCount = 2;
+        if (constraints.maxWidth > 1200) {
+          crossAxisCount = 4;
+        } else if (constraints.maxWidth > 800) {
+          crossAxisCount = 3;
+        }
+
+        return Scrollbar(
+          controller: _scrollController,
+          thumbVisibility: true,
+          child: CustomScrollView(
+            controller: _scrollController,
+            key: PageStorageKey<String>(widget.type),
+            primary: false,
+            slivers: [
+              // Section Header
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            _getSectionIcon(widget.type),
+                            color: AppTheme.primaryColor,
+                            size: 24,
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            widget.type,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.5,
                             ),
                           ),
-                        );
-                      },
-                    ),
-                  );
-                },
-                childCount: categories.length,
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _getSectionDescription(widget.type),
+                        style: TextStyle(
+                          color: Colors.grey[400],
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
+              
+              SliverPadding(
+                padding: const EdgeInsets.all(24),
+                sliver: SliverGrid(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: crossAxisCount,
+                    crossAxisSpacing: 20,
+                    mainAxisSpacing: 20,
+                    childAspectRatio: 0.65,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final category = categories[index];
+                      return EntryAnimatedWidget(
+                        delay: Duration(milliseconds: 50 + (index * 50).clamp(0, 500)),
+                        child: FolderCard(
+                          title: category['name'],
+                          subtitle: category['description'],
+                          icon: category['icon'],
+                          color: category['color'],
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SubjectDetailsScreen(
+                                  category: category['name'],
+                                  type: widget.type,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    },
+                    childCount: categories.length,
+                  ),
+                ),
+              ),
+              const SliverPadding(padding: EdgeInsets.only(bottom: 60)),
+            ],
           ),
-          const SliverPadding(padding: EdgeInsets.only(bottom: 40)),
-        ],
-      ),
+        );
+      },
     );
+  }
+
+  IconData _getSectionIcon(String type) {
+    switch (type) {
+      case 'Courses':
+        return Icons.school_rounded;
+      case 'Projects':
+        return Icons.assignment_rounded;
+      case 'Certificates':
+        return Icons.workspace_premium_rounded;
+      default:
+        return Icons.folder;
+    }
+  }
+
+  String _getSectionDescription(String type) {
+    switch (type) {
+      case 'Courses':
+        return 'Structured learning paths for core computer science subjects.';
+      case 'Projects':
+        return 'Hands-on practical applications to test your technical skills.';
+      case 'Certificates':
+        return 'Recognized credentials to validate your academic achievements.';
+      default:
+        return 'Explore various academic resources.';
+    }
   }
 }
 

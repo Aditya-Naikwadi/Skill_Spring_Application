@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'config/theme.dart';
 import 'firebase_options.dart';
 import 'providers/auth_provider.dart';
+import 'providers/dashboard_provider.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/register_screen.dart';
 import 'screens/home/home_screen.dart';
@@ -20,37 +21,38 @@ import 'widgets/auth/auth_guard.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Load environment variables
-  try {
-    await dotenv.load(fileName: ".env");
-  } catch (e) {
-    debugPrint('Error loading .env file: $e');
-  }
+  // Parallelize non-dependent initializations
+  await Future.wait([
+    dotenv.load(fileName: ".env").catchError((e) => debugPrint('Error loading .env file: $e')),
+    _initializeFirebase(),
+  ]);
 
-  // Initialize Firebase using the generated options
+  runApp(const MyApp());
+}
+
+Future<void> _initializeFirebase() async {
   try {
     if (Firebase.apps.isEmpty) {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
-      // Enable persistence to support offline mode (Mobile only)
-      // Disabled on Web to prevent IndexedDB timeouts
+      
+      // Persistence settings
       if (!kIsWeb) {
-        try {
-          FirebaseFirestore.instance.settings = const Settings(
-            persistenceEnabled: true,
-            cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
-          );
-        } catch (e) {
-          debugPrint('Firestore persistence init error: $e');
-        }
+        FirebaseFirestore.instance.settings = const Settings(
+          persistenceEnabled: true,
+          cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+        );
+      } else {
+        // Web optimization for strict tracking prevention
+        FirebaseFirestore.instance.settings = const Settings(
+          persistenceEnabled: false,
+        );
       }
     }
   } catch (e) {
     debugPrint('Firebase initialization error: $e');
   }
-  
-  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -61,6 +63,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => DashboardProvider()),
       ],
       child: MaterialApp(
         title: 'SkillSpring',

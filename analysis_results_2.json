@@ -1,0 +1,2 @@
+[error] Undefined class 'UserModel' (C:\Users\naikw\OneDrive\Desktop\Skill Spring Application\lib\screens\home\home_screen.dart:184:39)
+[error] A value of type 'Stream<User?> Function()' can't be returned from the function 'authStateChanges' because it has a return type of 'Stream<User?>' (C:\Users\naikw\OneDrive\Desktop\Skill Spring Application\lib\services\auth_service.dart:28:41)

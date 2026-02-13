@@ -4,6 +4,7 @@ import '../../models/course_model.dart';
 import '../../models/project_model.dart';
 import '../../services/database_service.dart';
 import '../projects/project_details_screen.dart';
+import '../../data/curriculum_data.dart';
 
 class CourseDetailsScreen extends StatefulWidget {
   final CourseModel course;
@@ -36,7 +37,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> with SingleTi
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 200,
+            expandedHeight: 240,
             pinned: true,
             backgroundColor: const Color(0xFF161B22),
             flexibleSpace: FlexibleSpaceBar(
@@ -45,7 +46,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> with SingleTi
                 fit: StackFit.expand,
                 children: [
                   Container(
-                     decoration: BoxDecoration(
+                    decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [AppTheme.primaryColor.withValues(alpha: 0.3), Colors.black],
                         begin: Alignment.topCenter,
@@ -54,10 +55,24 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> with SingleTi
                     ),
                   ),
                   Center(
-                    child: Icon(
-                      widget.course.iconData,
-                      size: 80,
-                      color: Colors.white.withValues(alpha: 0.5),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          widget.course.iconData,
+                          size: 64,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                             _headerChip(widget.course.difficulty, Colors.orange),
+                             const SizedBox(width: 12),
+                             _headerChip(widget.course.duration, Colors.blue),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -70,7 +85,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> with SingleTi
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   Text(
+                  Text(
                     widget.course.description,
                     style: TextStyle(color: Colors.grey[400], fontSize: 14),
                   ),
@@ -79,15 +94,15 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> with SingleTi
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Progress', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                      Text('0%', style: TextStyle(color: AppTheme.primaryColor)),
+                      const Text('Progress', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                      const Text('0%', style: TextStyle(color: AppTheme.primaryColor)),
                     ],
                   ),
                   const SizedBox(height: 8),
                   LinearProgressIndicator(
                     value: 0,
                     backgroundColor: Colors.grey[800],
-                    valueColor: AlwaysStoppedAnimation(AppTheme.primaryColor),
+                    valueColor: const AlwaysStoppedAnimation(AppTheme.primaryColor),
                   ),
                   const SizedBox(height: 24),
                 ],
@@ -125,6 +140,21 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> with SingleTi
     );
   }
 
+  Widget _headerChip(String label, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
   Widget _buildModulesTab() {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
@@ -150,7 +180,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> with SingleTi
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Module ${index + 1}: Introduction',
+                      'Module ${index + 1}: Core Concepts',
                       style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                     Text(
@@ -169,14 +199,28 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> with SingleTi
   }
 
   Widget _buildProjectsTab() {
+    final curriculum = CurriculumData.subjects[widget.course.category];
+
     return StreamBuilder<List<ProjectModel>>(
       stream: DatabaseService().getProjects(widget.course.category),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
-        final items = snapshot.data ?? [];
+        
+        final List<ProjectModel> items = [];
+        if (curriculum != null) {
+          items.addAll(curriculum.projects);
+        }
+
+        if (snapshot.hasData) {
+          for (var project in snapshot.data!) {
+            if (!items.any((e) => e.title == project.title)) {
+              items.add(project);
+            }
+          }
+        }
+
         if (items.isEmpty) return const Center(child: Text('No projects for this course.', style: TextStyle(color: Colors.grey)));
 
         return ListView.builder(
@@ -187,11 +231,22 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> with SingleTi
             return Card(
               color: const Color(0xFF161B22),
               margin: const EdgeInsets.only(bottom: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: Colors.white10),
+              ),
               child: ListTile(
-                leading: Icon(project.iconData, color: Colors.purple),
-                title: Text(project.title, style: const TextStyle(color: Colors.white)),
-                subtitle: Text(project.difficulty, style: TextStyle(color: Colors.grey[400])),
+                leading: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.purple.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(project.iconData, color: Colors.purple, size: 20),
+                ),
+                title: Text(project.title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                subtitle: Text(project.difficulty, style: TextStyle(color: Colors.grey[400], fontSize: 12)),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
                 onTap: () {
                    Navigator.push(

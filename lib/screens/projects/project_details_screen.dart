@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
-
 import '../../models/project_model.dart';
+import '../../data/curriculum_data.dart';
 
 class ProjectDetailsScreen extends StatefulWidget {
   final ProjectModel project;
@@ -13,13 +13,29 @@ class ProjectDetailsScreen extends StatefulWidget {
 }
 
 class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
-  // Mock tasks
-  final List<Map<String, dynamic>> _tasks = [
-    {'title': 'Setup Project Environment', 'completed': true},
-    {'title': 'Implement Core Logic', 'completed': false},
-    {'title': 'Write Unit Tests', 'completed': false},
-    {'title': 'Submit for Review', 'completed': false},
-  ];
+  late List<Map<String, dynamic>> _tasks;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeTasks();
+  }
+
+  void _initializeTasks() {
+    final roadmap = CurriculumData.subjects[widget.project.category]?.projectRoadmaps[widget.project.id];
+    
+    if (roadmap != null && roadmap.isNotEmpty) {
+      _tasks = roadmap.map((step) => {'title': step, 'completed': false}).toList();
+    } else {
+      // Default fallback tasks
+      _tasks = [
+        {'title': 'Setup Project Environment', 'completed': true},
+        {'title': 'Implement Core Logic', 'completed': false},
+        {'title': 'Write Unit Tests', 'completed': false},
+        {'title': 'Submit for Review', 'completed': false},
+      ];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

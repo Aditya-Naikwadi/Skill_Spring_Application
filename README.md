@@ -9,21 +9,20 @@ A comprehensive Flutter mobile application designed for college and university s
 ## 🎯 Features
 
 ### Core Features
-- **🔐 Authentication** - Email/Phone + Password with role-based access control
-- **📚 Course Catalog** - Browse courses by category (Python, Java, JavaScript, Web Dev, etc.)
-- **📖 Study Materials** - Text-based learning content and video courses
-- **🛠️ Hands-on Projects** - Step-by-step project guides with real-world applications
-- **🏆 Leaderboard** - Compete with peers and track your ranking
-- **📜 Free Certificates** - Earn certificates upon course completion
-- **👤 User Profile** - Track progress, view certificates, and manage account
+- **🔐 Authentication** - Secure login with multi-tiered persistence fallbacks (Local/Session/None)
+- **🎓 Tiered Curriculum** - Expert-designed courses: **Basic**, **Intermediate**, and **Expert** levels
+- **🛠️ Project Roadmaps** - Interactive, step-by-step implementation guidance for signature projects
+- **📖 Study Materials** - High-quality text and video content across 10 academic subjects
+- **🏆 Global Leaderboard** - Live ranking and points system to compete with peers
+- **📜 Verified Certificates** - Earn industry-recognized certificates upon course completion
+- **✨ Premium UI** - Modern glassmorphic design system with cinematic shimmer effects
 
 ### Student Benefits
-- ✅ Free access to all courses
-- ✅ Downloadable study materials
-- ✅ Industry-recognized certificates
-- ✅ Progress tracking and analytics
-- ✅ Community support
-- ✅ Career guidance resources
+- ✅ structured learning paths with expert roadmaps
+- ✅ Real-world project experience with guided implementation
+- ✅ Flexible authentication and offline-ready architecture
+- ✅ Seamless progress tracking across devices
+- ✅ Premium, ad-free learning environment
 
 ## 🚀 Getting Started
 
@@ -75,16 +74,16 @@ A comprehensive Flutter mobile application designed for college and university s
 - Role-based access control
 
 ### Home Screen
-- Personalized greeting
-- Progress overview with stats
-- Quick action cards
-- Featured courses
+- Personalized glassmorphic header
+- Interactive Bento Grid stats
+- One-tap Quick Action cards
+- Shimmer-loading featured courses
 
 ### Academics
-- Course catalog with categories
-- Search functionality
-- Course details with enrollment
-- Study materials and video player
+- Subject-based course organization
+- Tiered learning (Beginner to Expert)
+- Interactive Project Gallery
+- Detailed Project Roadmaps & Tasks
 
 ### Leaderboard
 - Top 3 podium display
@@ -102,45 +101,25 @@ A comprehensive Flutter mobile application designed for college and university s
 
 ```
 lib/
-├── config/
-│   ├── theme.dart              # App theme and styling
-│   └── routes.dart             # Navigation routes
-├── models/
-│   ├── user_model.dart         # User data model
-│   ├── course_model.dart       # Course data model
-│   ├── certificate_model.dart  # Certificate model
-│   └── leaderboard_entry.dart  # Leaderboard model
-├── services/
-│   ├── auth_service.dart       # Firebase Authentication
-│   ├── firestore_service.dart  # Firestore operations
-│   └── storage_service.dart    # Firebase Storage
-├── providers/
-│   ├── auth_provider.dart      # Auth state management
-│   ├── course_provider.dart    # Course state management
-│   └── leaderboard_provider.dart
-├── screens/
-│   ├── auth/                   # Login & Registration
-│   ├── home/                   # Home screen
-│   ├── academics/              # Course catalog & details
-│   ├── leaderboard/            # Rankings
-│   └── profile/                # User profile
-├── widgets/
-│   ├── common/                 # Reusable widgets
-│   └── course_card.dart        # Course card widget
-├── utils/
-│   ├── constants.dart          # App constants
-│   ├── validators.dart         # Form validators
-│   └── helpers.dart            # Helper functions
-└── main.dart                   # App entry point
+├── config/             # Theme & App Configuration
+├── core/               # Shared logic & base classes
+├── data/               # Static Curriculum & Roadmap Data
+├── models/             # Business Logic Models
+├── providers/          # Dashboard & Auth State Management
+├── screens/            # Application Views (Auth, Home, Academics)
+├── services/           # Firestore, Auth, & Storage Services
+├── utils/              # Helpers & Constants
+├── widgets/            # Reusable UI Components (Glass, Shimmer)
+└── main.dart           # App Entry & Init Sequence
 ```
 
 ## 🎨 Design
 
-- **Material Design 3** with custom color scheme
-- **Cupertino widgets** for iOS native feel
-- **Google Fonts** (Poppins) for typography
-- **Gradient backgrounds** and smooth animations
-- **Responsive layouts** for all screen sizes
+- **Premium Glassmorphism**: Translucent interfaces with real-time blur and glowing accents
+- **Material Design 3** base with heavily customized cyberpunk color scheme
+- **Dynamic Shimmer Loaders** for all data-driven components
+- **Smooth Cinematic Animations** powered by `animate_do`
+- **Responsive Adaptive Layouts** (Mobile, Tablet, Desktop)
 
 ### Color Palette
 - Primary: Deep Blue (#1976D2)
@@ -150,15 +129,11 @@ lib/
 
 ## 🔧 Technologies Used
 
-- **Framework**: Flutter 3.x
-- **Language**: Dart
-- **Backend**: Firebase
-  - Authentication
-  - Cloud Firestore
-  - Cloud Storage
-- **State Management**: Provider
-- **Navigation**: Material Navigation
-- **UI Components**: Material Design 3 + Cupertino
+- **Framework**: Flutter 3.x (State-of-the-Art)
+- **Backend**: Firebase (Auth, Firestore, Cloud Storage)
+- **State Management**: Provider with Unified Dashboard synchronization
+- **Architecture**: Domain-driven with specific fallbacks for web storage limitations
+- **UI System**: Premium Glassmorphism with Dynamic Shimmers
 
 ## 📦 Dependencies
 
@@ -185,14 +160,14 @@ See [pubspec.yaml](pubspec.yaml) for complete list.
 
 ## 🚧 Roadmap
 
-- [ ] Implement video course player
-- [ ] Add quiz functionality
-- [ ] Create discussion forums
-- [ ] Add push notifications
-- [ ] Implement offline mode
-- [ ] Add social sharing
-- [ ] Create instructor dashboard
-- [ ] Add payment integration for premium courses
+- [x] Implement Tiered Curriculum (Basics/Int/Expert)
+- [x] Add Interactive Project Roadmaps
+- [x] Unified Dashboard State Architecture
+- [x] Premium Shimmer Loading System
+- [x] Proactive Firestore Resilience (Long Polling/Persistence Fallbacks)
+- [ ] Implement AI Course Assistant
+- [ ] Add Real-time Group Study Rooms
+- [ ] Create Gamified Learning Paths
 
 ## 🤝 Contributing
 

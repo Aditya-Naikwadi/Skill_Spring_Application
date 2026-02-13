@@ -1,0 +1,4 @@
+[error] The getter 'authStateChanges' isn't defined for the type 'AuthService' (C:\Users\naikw\OneDrive\Desktop\Skill Spring Application\lib\providers\auth_provider.dart:40:18)
+[error] The method 'signInWithEmail' isn't defined for the type 'AuthService' (C:\Users\naikw\OneDrive\Desktop\Skill Spring Application\lib\providers\auth_provider.dart:92:41)
+[error] The method 'registerUser' isn't defined for the type 'AuthService' (C:\Users\naikw\OneDrive\Desktop\Skill Spring Application\lib\providers\auth_provider.dart:133:41)
+[info] Missing type annotation (C:\Users\naikw\OneDrive\Desktop\Skill Spring Application\lib\screens\home\home_screen.dart:184:39)

@@ -4,6 +4,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:provider/provider.dart';
 import '../../utils/helpers.dart';
 import '../../providers/auth_provider.dart';
+import '../common/glass_button.dart';
 
 class DashboardHeader extends StatelessWidget {
   const DashboardHeader({super.key});
@@ -165,12 +166,12 @@ class DashboardHeader extends StatelessWidget {
               duration: const Duration(milliseconds: 600),
               child: Row(
                 children: [
-                  _buildGlassButton(
+                  GlassButton(
                     icon: Icons.search_rounded,
                     onTap: () {},
                   ),
                   const SizedBox(width: 12),
-                  _buildGlassButton(
+                  GlassButton(
                     icon: Icons.notifications_none_rounded,
                     onTap: () {},
                     hasBadge: true,
@@ -181,66 +182,6 @@ class DashboardHeader extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildGlassButton({
-    required IconData icon,
-    required VoidCallback onTap,
-    bool hasBadge = false,
-  }) {
-    return Stack(
-      children: [
-        GlassmorphicContainer(
-          width: 44,
-          height: 44,
-          borderRadius: 12,
-          blur: 10,
-          alignment: Alignment.center,
-          border: 1,
-          linearGradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.white.withValues(alpha: 0.1),
-              Colors.white.withValues(alpha: 0.05),
-            ],
-          ),
-          borderGradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.white.withValues(alpha: 0.2),
-              Colors.white.withValues(alpha: 0.05),
-            ],
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: onTap,
-              borderRadius: BorderRadius.circular(12),
-              child: Icon(
-                icon,
-                color: Colors.white,
-                size: 22,
-              ),
-            ),
-          ),
-        ),
-        if (hasBadge)
-          Positioned(
-            top: 10,
-            right: 12,
-            child: Container(
-              width: 8,
-              height: 8,
-              decoration: const BoxDecoration(
-                color: Colors.redAccent,
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-      ],
     );
   }
 }

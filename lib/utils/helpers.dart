@@ -68,16 +68,17 @@ class Helpers {
 
   // Get first name from full name
   static String getFirstName(String fullName) {
-    return fullName.split(' ').first;
+    if (fullName.isEmpty) return 'Student';
+    return fullName.trim().split(' ').first;
   }
 
   // Get initials from name
   static String getInitials(String name) {
-    if (name.isEmpty) return '';
+    if (name.isEmpty) return 'S';
     
-    final parts = name.trim().split(RegExp(r'\s+')); // Split by one or more spaces
+    final parts = name.trim().split(RegExp(r'\s+'));
     
-    if (parts.isEmpty || parts[0].isEmpty) return '';
+    if (parts.isEmpty || parts[0].isEmpty) return 'S';
 
     if (parts.length >= 2 && parts[1].isNotEmpty) {
       return '${parts[0][0]}${parts[1][0]}'.toUpperCase();

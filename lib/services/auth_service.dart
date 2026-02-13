@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,10 +14,15 @@ class AuthService {
   // Initialize Auth Persistence (Call this before other ops)
   Future<void> initialize() async {
     if (kIsWeb) {
-       try {
+      try {
         await _auth.setPersistence(Persistence.LOCAL);
       } catch (e) {
-        debugPrint('Auth Persistence Error: $e');
+        debugPrint('Auth LOCAL Persistence blocked: $e');
+        try {
+          await _auth.setPersistence(Persistence.SESSION);
+        } catch (se) {
+          debugPrint('Auth SESSION Persistence blocked: $se');
+        }
       }
     }
   }
@@ -24,7 +30,77 @@ class AuthService {
   // Get current user (Note: May be null if using REST auth without custom token sign-in)
   User? get currentUser => _auth.currentUser;
 
-  // ... (rest of the file until getUserData)
+  // Stream of auth state changes
+  Stream<User?> get authStateChanges => _auth.authStateChanges();
+
+  // Sign in with email and password
+  Future<UserModel?> signInWithEmail(String email, String password) async {
+    try {
+      final UserCredential result = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      final User? user = result.user;
+      if (user != null) {
+        return await getUserData(user.uid);
+      }
+    } on FirebaseAuthException catch (e) {
+      throw _handleAuthException(e);
+    } catch (e) {
+      throw 'An unexpected error occurred. Please try again.';
+    }
+    return null;
+  }
+
+  // Register user with email, password and additional details
+  Future<UserModel?> registerUser({
+    required String email,
+    required String password,
+    required String displayName,
+    required String institution,
+    String? phoneNumber,
+    UserRole role = UserRole.student,
+  }) async {
+    try {
+      final UserCredential result = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      final User? user = result.user;
+
+      if (user != null) {
+        // Create a new user model
+        final newUser = UserModel(
+          uid: user.uid,
+          email: email,
+          displayName: displayName,
+          institution: institution,
+          phoneNumber: phoneNumber,
+          role: role,
+          createdAt: DateTime.now(),
+          lastLoginAt: DateTime.now(),
+        );
+
+        // Save to Firestore
+        await _firestore.collection('users').doc(user.uid).set(newUser.toMap());
+        
+        // Also add to leaderboard initials
+        await _firestore.collection('leaderboard').doc(user.uid).set({
+          'uid': user.uid,
+          'displayName': displayName,
+          'points': 0,
+          'institution': institution,
+        });
+
+        return newUser;
+      }
+    } on FirebaseAuthException catch (e) {
+      throw _handleAuthException(e);
+    } catch (e) {
+      throw 'Registration failed. Please try again.';
+    }
+    return null;
+  }
 
   // Get user data from Firestore with Fallback
   Future<UserModel?> getUserData(String uid) async {
@@ -33,14 +109,16 @@ class AuthService {
           .collection('users')
           .doc(uid)
           .get()
-          .timeout(const Duration(seconds: 4)); // Reduced timeout
+          .timeout(const Duration(seconds: 10)); // Increased timeout
 
       if (doc.exists) {
         return UserModel.fromMap(doc.data() as Map<String, dynamic>);
       }
     } catch (e) {
-      debugPrint('Firestore Error or Timeout: $e');
-      // FALLBACK: Do not return null (which logs user out).
+      if (e is! TimeoutException) {
+        debugPrint('Firestore Error: $e');
+      }
+      // FALLBACK: User remains logged in but with local-only data
       // Return a basic model derived from FirebaseAuth info so user stays logged in.
       final user = _auth.currentUser;
       if (user != null && user.uid == uid) {

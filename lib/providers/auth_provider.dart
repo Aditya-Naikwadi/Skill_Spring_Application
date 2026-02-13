@@ -28,8 +28,8 @@ class AuthProvider with ChangeNotifier {
   void _initAuth() {
     bool initialCheckCompleted = false;
 
-    // Safety timeout: if Firebase doesn't respond in 5 seconds, assume offline/logged out
-    Future.delayed(const Duration(seconds: 5), () {
+    // Safety timeout: if Firebase doesn't respond in 10 seconds, assume offline/logged out
+    Future.delayed(const Duration(seconds: 10), () {
       if (!initialCheckCompleted) {
         _isAuthCheckComplete = true;
         initialCheckCompleted = true;
