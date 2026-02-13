@@ -89,8 +89,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             height: 600,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: const Color(0xFF03A9F4).withValues(alpha: 0.1),
-                            ),
+                              color: const Color(0xFF2196F3).withValues(alpha: 0.1),
                           ),
                         ),
                         
@@ -123,10 +122,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     Colors.white.withValues(alpha: 0.1),
                                   ],
                                 ),
-                                child: const Icon(
-                                  Icons.person_add_alt_1_rounded,
-                                  size: 100,
-                                  color: Colors.white,
+                                child: Image.asset(
+                                  'assets/images/logo.png',
+                                  width: 140,
+                                  height: 140,
+                                  fit: BoxFit.contain,
                                 ),
                               ),
                             ),
@@ -203,6 +203,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
           const SizedBox(height: 24),
         ],
+        
+        // Header with Logo
+        Center(
+          child: Hero(
+            tag: 'app_logo',
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF161B22),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+              ),
+              child: Image.asset(
+                'assets/images/logo.png',
+                height: 40,
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 24),
         
         FadeInDown(
           child: Text(

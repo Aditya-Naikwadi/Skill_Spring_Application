@@ -302,11 +302,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         ],
                       ),
                       child: Center(
-                        child: Icon(
-                          content.icon,
-                          size: iconSize,
-                          color: Colors.white.withValues(alpha: 0.9),
-                        ),
+                        child: index == 0 
+                          ? Image.asset(
+                              'assets/images/logo.png',
+                              width: imageSize * 0.6,
+                              height: imageSize * 0.6,
+                              fit: BoxFit.contain,
+                            )
+                          : Icon(
+                              content.icon,
+                              size: iconSize,
+                              color: Colors.white.withValues(alpha: 0.9),
+                            ),
                       ),
                     ),
                     // Floating elements for "3D" feel

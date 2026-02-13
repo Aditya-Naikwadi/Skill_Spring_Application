@@ -113,25 +113,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                     Colors.white.withValues(alpha: 0.1),
                                   ],
                                 ),
-                                child: const Icon(
-                                  Icons.code,
-                                  size: 100,
-                                  color: Colors.white,
+                                child: Image.asset(
+                                  'assets/images/logo.png',
+                                  width: 140,
+                                  height: 140,
+                                  fit: BoxFit.contain,
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 32),
-                            FadeInUp(
-                              delay: const Duration(milliseconds: 200),
-                              child: Text(
-                                'Skill Spring',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 48,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
+                            const SizedBox(height: 16),
                             const SizedBox(height: 16),
                             FadeInUp(
                               delay: const Duration(milliseconds: 400),
@@ -198,10 +188,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
               ),
-              child: const Icon(
-                Icons.code,
-                size: 40,
-                color: Color(0xFF2196F3),
+              child: Image.asset(
+                'assets/images/logo.png',
+                height: 40,
+                fit: BoxFit.contain,
               ),
             ),
           ),
