@@ -38,9 +38,9 @@ dependencies:
   # Utilities
   intl: ^0.20.2
   url_launcher: ^6.2.3
-  share_plus: ^12.0.1
+  share_plus: ^10.1.4
   image_picker: ^1.0.7
-  path_provider: ^2.1.2
+  path_provider: 2.1.2
   shared_preferences: ^2.2.2
 
   # Icons
@@ -66,3 +66,6 @@ flutter:
     - assets/icons/
     - assets/animations/
     - assets/certificates/
+
+dependency_overrides:
+  path_provider_foundation: 2.4.0
